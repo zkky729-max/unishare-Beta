@@ -1,0 +1,220 @@
+import { supabase } from "@/lib/supabaseClient";
+
+export interface Lesson {
+  id: string;
+  subject_id: string;
+  title: string;
+  description?: string | null;
+  content?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+// =====================================================
+// GET LESSONS BY SUBJECT
+// =====================================================
+
+export async function getLessonsBySubject(
+  subjectId: string
+): Promise<Lesson[]> {
+  if (!subjectId) {
+    throw new Error("Subject ID is required.");
+  }
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select(`
+      id,
+      subject_id,
+      title,
+      description,
+      content,
+      created_at,
+      updated_at
+    `)
+    .eq("subject_id", subjectId)
+    .order("created_at", {
+      ascending: true,
+    });
+
+  if (error) {
+    console.error(
+      "GET LESSONS ERROR:",
+      error
+    );
+
+    throw error;
+  }
+
+  return (data ?? []) as Lesson[];
+}
+
+// =====================================================
+// GET SINGLE LESSON
+// =====================================================
+
+export async function getLessonById(
+  lessonId: string
+): Promise<Lesson | null> {
+  if (!lessonId) {
+    throw new Error("Lesson ID is required.");
+  }
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select(`
+      id,
+      subject_id,
+      title,
+      description,
+      content,
+      created_at,
+      updated_at
+    `)
+    .eq("id", lessonId)
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      "GET LESSON ERROR:",
+      error
+    );
+
+    throw error;
+  }
+
+  return data as Lesson | null;
+}
+
+// =====================================================
+// ADD LESSON
+// =====================================================
+
+export async function addLesson(
+  subjectId: string,
+  title: string,
+  description?: string,
+  content?: string
+): Promise<Lesson> {
+  const cleanTitle = title.trim();
+
+  if (!subjectId) {
+    throw new Error("Subject ID is required.");
+  }
+
+  if (!cleanTitle) {
+    throw new Error("Lesson title is required.");
+  }
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .insert({
+      subject_id: subjectId,
+      title: cleanTitle,
+      description:
+        description?.trim() || null,
+      content:
+        content?.trim() || null,
+    })
+    .select(`
+      id,
+      subject_id,
+      title,
+      description,
+      content,
+      created_at,
+      updated_at
+    `)
+    .single();
+
+  if (error) {
+    console.error(
+      "ADD LESSON ERROR:",
+      error
+    );
+
+    throw error;
+  }
+
+  return data as Lesson;
+}
+
+// =====================================================
+// UPDATE LESSON
+// =====================================================
+
+export async function updateLesson(
+  lessonId: string,
+  title: string,
+  description?: string,
+  content?: string
+): Promise<Lesson> {
+  const cleanTitle = title.trim();
+
+  if (!lessonId) {
+    throw new Error("Lesson ID is required.");
+  }
+
+  if (!cleanTitle) {
+    throw new Error("Lesson title is required.");
+  }
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .update({
+      title: cleanTitle,
+      description:
+        description?.trim() || null,
+      content:
+        content?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", lessonId)
+    .select(`
+      id,
+      subject_id,
+      title,
+      description,
+      content,
+      created_at,
+      updated_at
+    `)
+    .single();
+
+  if (error) {
+    console.error(
+      "UPDATE LESSON ERROR:",
+      error
+    );
+
+    throw error;
+  }
+
+  return data as Lesson;
+}
+
+// =====================================================
+// DELETE LESSON
+// =====================================================
+
+export async function deleteLesson(
+  lessonId: string
+): Promise<void> {
+  if (!lessonId) {
+    throw new Error("Lesson ID is required.");
+  }
+
+  const { error } = await supabase
+    .from("lessons")
+    .delete()
+    .eq("id", lessonId);
+
+  if (error) {
+    console.error(
+      "DELETE LESSON ERROR:",
+      error
+    );
+
+    throw error;
+  }
+}
