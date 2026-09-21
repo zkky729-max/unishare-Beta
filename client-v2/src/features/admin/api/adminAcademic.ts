@@ -95,7 +95,7 @@ export interface AdminLesson {
 // =====================================================
 
 const API_BASE_URL =
-  "http://localhost:3001/api/admin";
+  "https://unishare-api-ivory.vercel.app/api/admin";
 
 // =====================================================
 // ACCESS TOKEN
@@ -128,17 +128,14 @@ async function adminRequest<T>(
 ): Promise<T> {
   const token = await getAccessToken();
 
-  const response = await fetch(
-    `${API_BASE_URL}${endpoint}`,
-    {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        ...(options.headers ?? {}),
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers ?? {}),
+    },
+  });
 
   let result: {
     success?: boolean;
@@ -162,10 +159,7 @@ async function adminRequest<T>(
   }
 
   if (!result?.success) {
-    throw new Error(
-      result?.message ??
-        "Admin request failed"
-    );
+    throw new Error(result?.message ?? "Admin request failed");
   }
 
   return result.data as T;
@@ -178,9 +172,7 @@ async function adminRequest<T>(
 export async function getAdminUniversities(): Promise<
   AdminUniversity[]
 > {
-  return adminRequest<AdminUniversity[]>(
-    "/universities"
-  );
+  return adminRequest<AdminUniversity[]>("/universities");
 }
 
 export async function createAdminUniversity(
@@ -194,35 +186,24 @@ export async function createAdminUniversity(
   }
 ): Promise<AdminUniversity> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "University name is required"
-    );
+    throw new Error("University name is required");
   }
 
   if (!payload.slug?.trim()) {
-    throw new Error(
-      "University slug is required"
-    );
+    throw new Error("University slug is required");
   }
 
-  return adminRequest<AdminUniversity>(
-    "/universities",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        slug: payload.slug.trim(),
-        country_id:
-          payload.country_id?.trim() || null,
-        city:
-          payload.city?.trim() || null,
-        description:
-          payload.description?.trim() || null,
-        logo_url:
-          payload.logo_url?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminUniversity>("/universities", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      slug: payload.slug.trim(),
+      country_id: payload.country_id?.trim() || null,
+      city: payload.city?.trim() || null,
+      description: payload.description?.trim() || null,
+      logo_url: payload.logo_url?.trim() || null,
+    }),
+  });
 }
 
 export async function updateAdminUniversity(
@@ -237,21 +218,15 @@ export async function updateAdminUniversity(
   }
 ): Promise<AdminUniversity> {
   if (!id?.trim()) {
-    throw new Error(
-      "University ID is required"
-    );
+    throw new Error("University ID is required");
   }
 
   if (!payload.name?.trim()) {
-    throw new Error(
-      "University name is required"
-    );
+    throw new Error("University name is required");
   }
 
   if (!payload.slug?.trim()) {
-    throw new Error(
-      "University slug is required"
-    );
+    throw new Error("University slug is required");
   }
 
   return adminRequest<AdminUniversity>(
@@ -261,14 +236,10 @@ export async function updateAdminUniversity(
       body: JSON.stringify({
         name: payload.name.trim(),
         slug: payload.slug.trim(),
-        country_id:
-          payload.country_id?.trim() || null,
-        city:
-          payload.city?.trim() || null,
-        description:
-          payload.description?.trim() || null,
-        logo_url:
-          payload.logo_url?.trim() || null,
+        country_id: payload.country_id?.trim() || null,
+        city: payload.city?.trim() || null,
+        description: payload.description?.trim() || null,
+        logo_url: payload.logo_url?.trim() || null,
       }),
     }
   );
@@ -278,9 +249,7 @@ export async function deleteAdminUniversity(
   id: string
 ): Promise<void> {
   if (!id?.trim()) {
-    throw new Error(
-      "University ID is required"
-    );
+    throw new Error("University ID is required");
   }
 
   await adminRequest<null>(
@@ -298,9 +267,7 @@ export async function deleteAdminUniversity(
 export async function getAdminFaculties(): Promise<
   AdminFaculty[]
 > {
-  return adminRequest<AdminFaculty[]>(
-    "/faculties"
-  );
+  return adminRequest<AdminFaculty[]>("/faculties");
 }
 
 export async function createAdminFaculty(
@@ -313,37 +280,26 @@ export async function createAdminFaculty(
   }
 ): Promise<AdminFaculty> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Faculty name is required"
-    );
+    throw new Error("Faculty name is required");
   }
 
-  return adminRequest<AdminFaculty>(
-    "/faculties",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        university_id:
-          payload.university_id?.trim() || null,
-        slug:
-          payload.slug?.trim() || null,
-        description:
-          payload.description?.trim() || null,
-        logo_url:
-          payload.logo_url?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminFaculty>("/faculties", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      university_id: payload.university_id?.trim() || null,
+      slug: payload.slug?.trim() || null,
+      description: payload.description?.trim() || null,
+      logo_url: payload.logo_url?.trim() || null,
+    }),
+  });
 }
 
 export async function deleteAdminFaculty(
   id: string
 ): Promise<void> {
   if (!id?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
   await adminRequest<null>(
@@ -362,9 +318,7 @@ export async function getAdminDepartmentsByFaculty(
   facultyId: string
 ): Promise<AdminDepartment[]> {
   if (!facultyId?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
   return adminRequest<AdminDepartment[]>(
@@ -381,32 +335,22 @@ export async function createAdminDepartment(
   }
 ): Promise<AdminDepartment> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Department name is required"
-    );
+    throw new Error("Department name is required");
   }
 
   if (!payload.faculty_id?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
-  return adminRequest<AdminDepartment>(
-    "/departments",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        faculty_id:
-          payload.faculty_id.trim(),
-        slug:
-          payload.slug?.trim() || null,
-        description:
-          payload.description?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminDepartment>("/departments", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      faculty_id: payload.faculty_id.trim(),
+      slug: payload.slug?.trim() || null,
+      description: payload.description?.trim() || null,
+    }),
+  });
 }
 
 export async function updateAdminDepartment(
@@ -419,21 +363,15 @@ export async function updateAdminDepartment(
   }
 ): Promise<AdminDepartment> {
   if (!id?.trim()) {
-    throw new Error(
-      "Department ID is required"
-    );
+    throw new Error("Department ID is required");
   }
 
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Department name is required"
-    );
+    throw new Error("Department name is required");
   }
 
   if (!payload.faculty_id?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
   return adminRequest<AdminDepartment>(
@@ -442,12 +380,9 @@ export async function updateAdminDepartment(
       method: "PUT",
       body: JSON.stringify({
         name: payload.name.trim(),
-        faculty_id:
-          payload.faculty_id.trim(),
-        slug:
-          payload.slug?.trim() || null,
-        description:
-          payload.description?.trim() || null,
+        faculty_id: payload.faculty_id.trim(),
+        slug: payload.slug?.trim() || null,
+        description: payload.description?.trim() || null,
       }),
     }
   );
@@ -457,9 +392,7 @@ export async function deleteAdminDepartment(
   id: string
 ): Promise<void> {
   if (!id?.trim()) {
-    throw new Error(
-      "Department ID is required"
-    );
+    throw new Error("Department ID is required");
   }
 
   await adminRequest<null>(
@@ -478,9 +411,7 @@ export async function getAdminSpecialtiesByFaculty(
   facultyId: string
 ): Promise<AdminSpecialty[]> {
   if (!facultyId?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
   return adminRequest<AdminSpecialty[]>(
@@ -497,41 +428,29 @@ export async function createAdminSpecialty(
   }
 ): Promise<AdminSpecialty> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Specialty name is required"
-    );
+    throw new Error("Specialty name is required");
   }
 
   if (!payload.faculty_id?.trim()) {
-    throw new Error(
-      "Faculty ID is required"
-    );
+    throw new Error("Faculty ID is required");
   }
 
-  return adminRequest<AdminSpecialty>(
-    "/specialties",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        faculty_id:
-          payload.faculty_id.trim(),
-        department_id:
-          payload.department_id?.trim() || null,
-        slug:
-          payload.slug?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminSpecialty>("/specialties", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      faculty_id: payload.faculty_id.trim(),
+      department_id: payload.department_id?.trim() || null,
+      slug: payload.slug?.trim() || null,
+    }),
+  });
 }
 
 export async function deleteAdminSpecialty(
   id: string
 ): Promise<void> {
   if (!id?.trim()) {
-    throw new Error(
-      "Specialty ID is required"
-    );
+    throw new Error("Specialty ID is required");
   }
 
   await adminRequest<null>(
@@ -550,9 +469,7 @@ export async function getAdminLevelsBySpecialty(
   specialtyId: string
 ): Promise<AdminLevel[]> {
   if (!specialtyId?.trim()) {
-    throw new Error(
-      "Specialty ID is required"
-    );
+    throw new Error("Specialty ID is required");
   }
 
   return adminRequest<AdminLevel[]>(
@@ -570,35 +487,24 @@ export async function createAdminLevel(
   }
 ): Promise<AdminLevel> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Level name is required"
-    );
+    throw new Error("Level name is required");
   }
 
   if (!payload.specialty_id?.trim()) {
-    throw new Error(
-      "Specialty ID is required"
-    );
+    throw new Error("Specialty ID is required");
   }
 
-  return adminRequest<AdminLevel>(
-    "/levels",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        specialty_id:
-          payload.specialty_id.trim(),
-        description:
-          payload.description?.trim() || null,
-        education_type_id:
-          payload.education_type_id?.trim() ||
-          null,
-        year_id:
-          payload.year_id?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminLevel>("/levels", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      specialty_id: payload.specialty_id.trim(),
+      description: payload.description?.trim() || null,
+      education_type_id:
+        payload.education_type_id?.trim() || null,
+      year_id: payload.year_id?.trim() || null,
+    }),
+  });
 }
 
 // =====================================================
@@ -609,9 +515,7 @@ export async function getAdminSemestersByLevel(
   levelId: string
 ): Promise<AdminSemester[]> {
   if (!levelId?.trim()) {
-    throw new Error(
-      "Level ID is required"
-    );
+    throw new Error("Level ID is required");
   }
 
   return adminRequest<AdminSemester[]>(
@@ -627,30 +531,21 @@ export async function createAdminSemester(
   }
 ): Promise<AdminSemester> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Semester name is required"
-    );
+    throw new Error("Semester name is required");
   }
 
   if (!payload.level_id?.trim()) {
-    throw new Error(
-      "Level ID is required"
-    );
+    throw new Error("Level ID is required");
   }
 
-  return adminRequest<AdminSemester>(
-    "/semesters",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        level_id:
-          payload.level_id.trim(),
-        semester_number:
-          payload.semester_number ?? null,
-      }),
-    }
-  );
+  return adminRequest<AdminSemester>("/semesters", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      level_id: payload.level_id.trim(),
+      semester_number: payload.semester_number ?? null,
+    }),
+  });
 }
 
 // =====================================================
@@ -660,18 +555,14 @@ export async function createAdminSemester(
 export async function getAdminModules(): Promise<
   AdminModule[]
 > {
-  return adminRequest<AdminModule[]>(
-    "/modules"
-  );
+  return adminRequest<AdminModule[]>("/modules");
 }
 
 export async function getAdminModulesBySemester(
   semesterId: string
 ): Promise<AdminModule[]> {
   if (!semesterId?.trim()) {
-    throw new Error(
-      "Semester ID is required"
-    );
+    throw new Error("Semester ID is required");
   }
 
   return adminRequest<AdminModule[]>(
@@ -688,32 +579,22 @@ export async function createAdminModule(
   }
 ): Promise<AdminModule> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Module name is required"
-    );
+    throw new Error("Module name is required");
   }
 
   if (!payload.semester_id?.trim()) {
-    throw new Error(
-      "Semester ID is required"
-    );
+    throw new Error("Semester ID is required");
   }
 
-  return adminRequest<AdminModule>(
-    "/modules",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        semester_id:
-          payload.semester_id.trim(),
-        specialty_id:
-          payload.specialty_id?.trim() || null,
-        year_id:
-          payload.year_id?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminModule>("/modules", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      semester_id: payload.semester_id.trim(),
+      specialty_id: payload.specialty_id?.trim() || null,
+      year_id: payload.year_id?.trim() || null,
+    }),
+  });
 }
 
 // =====================================================
@@ -723,18 +604,14 @@ export async function createAdminModule(
 export async function getAdminSubjects(): Promise<
   AdminSubject[]
 > {
-  return adminRequest<AdminSubject[]>(
-    "/subjects"
-  );
+  return adminRequest<AdminSubject[]>("/subjects");
 }
 
 export async function getAdminSubjectsByModule(
   moduleId: string
 ): Promise<AdminSubject[]> {
   if (!moduleId?.trim()) {
-    throw new Error(
-      "Module ID is required"
-    );
+    throw new Error("Module ID is required");
   }
 
   return adminRequest<AdminSubject[]>(
@@ -750,30 +627,21 @@ export async function createAdminSubject(
   }
 ): Promise<AdminSubject> {
   if (!payload.name?.trim()) {
-    throw new Error(
-      "Subject name is required"
-    );
+    throw new Error("Subject name is required");
   }
 
   if (!payload.module_id?.trim()) {
-    throw new Error(
-      "Module ID is required"
-    );
+    throw new Error("Module ID is required");
   }
 
-  return adminRequest<AdminSubject>(
-    "/subjects",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        module_id:
-          payload.module_id.trim(),
-        description:
-          payload.description?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminSubject>("/subjects", {
+    method: "POST",
+    body: JSON.stringify({
+      name: payload.name.trim(),
+      module_id: payload.module_id.trim(),
+      description: payload.description?.trim() || null,
+    }),
+  });
 }
 
 // =====================================================
@@ -784,9 +652,7 @@ export async function getAdminLessonsBySubject(
   subjectId: string
 ): Promise<AdminLesson[]> {
   if (!subjectId?.trim()) {
-    throw new Error(
-      "Subject ID is required"
-    );
+    throw new Error("Subject ID is required");
   }
 
   return adminRequest<AdminLesson[]>(
@@ -803,33 +669,22 @@ export async function createAdminLesson(
   }
 ): Promise<AdminLesson> {
   if (!payload.subject_id?.trim()) {
-    throw new Error(
-      "Subject ID is required"
-    );
+    throw new Error("Subject ID is required");
   }
 
   if (!payload.title?.trim()) {
-    throw new Error(
-      "Lesson title is required"
-    );
+    throw new Error("Lesson title is required");
   }
 
-  return adminRequest<AdminLesson>(
-    "/lessons",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        subject_id:
-          payload.subject_id.trim(),
-        title:
-          payload.title.trim(),
-        description:
-          payload.description?.trim() || null,
-        content:
-          payload.content?.trim() || null,
-      }),
-    }
-  );
+  return adminRequest<AdminLesson>("/lessons", {
+    method: "POST",
+    body: JSON.stringify({
+      subject_id: payload.subject_id.trim(),
+      title: payload.title.trim(),
+      description: payload.description?.trim() || null,
+      content: payload.content?.trim() || null,
+    }),
+  });
 }
 
 export async function updateAdminLesson(
@@ -841,15 +696,11 @@ export async function updateAdminLesson(
   }
 ): Promise<AdminLesson> {
   if (!id?.trim()) {
-    throw new Error(
-      "Lesson ID is required"
-    );
+    throw new Error("Lesson ID is required");
   }
 
   if (!payload.title?.trim()) {
-    throw new Error(
-      "Lesson title is required"
-    );
+    throw new Error("Lesson title is required");
   }
 
   return adminRequest<AdminLesson>(
@@ -857,12 +708,9 @@ export async function updateAdminLesson(
     {
       method: "PUT",
       body: JSON.stringify({
-        title:
-          payload.title.trim(),
-        description:
-          payload.description?.trim() || null,
-        content:
-          payload.content?.trim() || null,
+        title: payload.title.trim(),
+        description: payload.description?.trim() || null,
+        content: payload.content?.trim() || null,
       }),
     }
   );
@@ -872,9 +720,7 @@ export async function deleteAdminLesson(
   id: string
 ): Promise<void> {
   if (!id?.trim()) {
-    throw new Error(
-      "Lesson ID is required"
-    );
+    throw new Error("Lesson ID is required");
   }
 
   await adminRequest<null>(
