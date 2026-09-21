@@ -1437,10 +1437,6 @@ export async function deleteFaculty(
 // DEPARTMENTS
 // =====================================================
 
-// =====================================================
-// CREATE DEPARTMENT
-// =====================================================
-
 export async function createDepartment(
   req: Request,
   res: Response
@@ -1876,10 +1872,6 @@ export async function deleteDepartment(
 // SPECIALTIES
 // =====================================================
 
-// =====================================================
-// CREATE SPECIALTY
-// =====================================================
-
 export async function createSpecialty(
   req: Request,
   res: Response
@@ -2203,10 +2195,6 @@ export async function deleteSpecialty(
       });
     }
 
-    // ---------------------------------------------------
-    // LEVELS
-    // ---------------------------------------------------
-
     const {
       data: levels,
       error: levelsError,
@@ -2234,10 +2222,6 @@ export async function deleteSpecialty(
       levels?.map(
         (item) => item.id
       ) ?? [];
-
-    // ---------------------------------------------------
-    // SEMESTERS
-    // ---------------------------------------------------
 
     let semesterIds: string[] = [];
 
@@ -2271,10 +2255,6 @@ export async function deleteSpecialty(
           (item) => item.id
         ) ?? [];
     }
-
-    // ---------------------------------------------------
-    // MODULES
-    // ---------------------------------------------------
 
     const moduleIdsSet =
       new Set<string>();
@@ -2350,10 +2330,6 @@ export async function deleteSpecialty(
     const moduleIds =
       Array.from(moduleIdsSet);
 
-    // ---------------------------------------------------
-    // SUBJECTS
-    // ---------------------------------------------------
-
     let subjectIds: string[] = [];
 
     if (moduleIds.length > 0) {
@@ -2386,10 +2362,6 @@ export async function deleteSpecialty(
           (item) => item.id
         ) ?? [];
     }
-
-    // ---------------------------------------------------
-    // LESSONS
-    // ---------------------------------------------------
 
     let lessonIds: string[] = [];
 
@@ -2424,10 +2396,6 @@ export async function deleteSpecialty(
         ) ?? [];
     }
 
-    // ---------------------------------------------------
-    // DELETE FILES LINKED TO LESSONS
-    // ---------------------------------------------------
-
     if (lessonIds.length > 0) {
       const {
         error: lessonFilesError,
@@ -2452,10 +2420,6 @@ export async function deleteSpecialty(
         });
       }
     }
-
-    // ---------------------------------------------------
-    // DELETE FILES LINKED TO MODULES
-    // ---------------------------------------------------
 
     if (moduleIds.length > 0) {
       const {
@@ -2482,10 +2446,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE FILES LINKED TO SUBJECTS
-    // ---------------------------------------------------
-
     if (subjectIds.length > 0) {
       const {
         error: subjectFilesError,
@@ -2511,10 +2471,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE LESSONS
-    // ---------------------------------------------------
-
     if (lessonIds.length > 0) {
       const {
         error: deleteLessonsError,
@@ -2539,10 +2495,6 @@ export async function deleteSpecialty(
         });
       }
     }
-
-    // ---------------------------------------------------
-    // CLEAR PROFILES
-    // ---------------------------------------------------
 
     const {
       error: specialtyProfilesError,
@@ -2656,10 +2608,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE POSTS LINKED TO SPECIALTY
-    // ---------------------------------------------------
-
     const {
       error: specialtyPostsError,
     } = await supabaseAdmin
@@ -2682,10 +2630,6 @@ export async function deleteSpecialty(
           specialtyPostsError.message,
       });
     }
-
-    // ---------------------------------------------------
-    // DELETE POSTS LINKED TO LEVELS
-    // ---------------------------------------------------
 
     if (levelIds.length > 0) {
       const {
@@ -2712,10 +2656,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE POSTS LINKED TO SEMESTERS
-    // ---------------------------------------------------
-
     if (semesterIds.length > 0) {
       const {
         error: semesterPostsError,
@@ -2740,10 +2680,6 @@ export async function deleteSpecialty(
         });
       }
     }
-
-    // ---------------------------------------------------
-    // DELETE POSTS LINKED TO MODULES
-    // ---------------------------------------------------
 
     if (moduleIds.length > 0) {
       const {
@@ -2770,10 +2706,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE SUBJECTS
-    // ---------------------------------------------------
-
     if (subjectIds.length > 0) {
       const {
         error: deleteSubjectsError,
@@ -2798,10 +2730,6 @@ export async function deleteSpecialty(
         });
       }
     }
-
-    // ---------------------------------------------------
-    // DELETE MODULES
-    // ---------------------------------------------------
 
     if (moduleIds.length > 0) {
       const {
@@ -2828,10 +2756,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE SEMESTERS
-    // ---------------------------------------------------
-
     if (semesterIds.length > 0) {
       const {
         error: deleteSemestersError,
@@ -2857,10 +2781,6 @@ export async function deleteSpecialty(
       }
     }
 
-    // ---------------------------------------------------
-    // DELETE LEVELS
-    // ---------------------------------------------------
-
     if (levelIds.length > 0) {
       const {
         error: deleteLevelsError,
@@ -2885,10 +2805,6 @@ export async function deleteSpecialty(
         });
       }
     }
-
-    // ---------------------------------------------------
-    // DELETE SPECIALTY
-    // ---------------------------------------------------
 
     const {
       error: deleteSpecialtyError,
@@ -4091,6 +4007,202 @@ export async function deleteLesson(
         error instanceof Error
           ? error.message
           : "Failed to delete lesson.",
+    });
+  }
+}
+
+// =====================================================
+// GET ALL POSTS FOR ADMIN
+// =====================================================
+
+export async function getAdminPosts(
+  req: Request,
+  res: Response
+) {
+  try {
+    const {
+      data,
+      error,
+    } = await supabaseAdmin
+      .from("posts")
+      .select(`
+        id,
+        user_id,
+        content,
+        pdf_url,
+        pdf_name,
+        images_urls,
+        created_at,
+        visibility_type,
+        audience_type,
+        university_id,
+        faculty_id,
+        specialty_id,
+        level_id,
+        semester_id,
+        module_id,
+        teacher_name,
+        academic_type,
+        subject_name,
+        academic_year
+      `)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      console.error(
+        "GET ADMIN POSTS ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: data ?? [],
+    });
+  } catch (error) {
+    console.error(
+      "GET ADMIN POSTS EXCEPTION:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to get admin posts.",
+    });
+  }
+}
+
+// =====================================================
+// DELETE POST
+// =====================================================
+
+export async function deletePost(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { id } = req.params;
+
+    if (!isNonEmptyString(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Post ID is required.",
+      });
+    }
+
+    const postId = id.trim();
+
+    const {
+      data: post,
+      error: postError,
+    } = await supabaseAdmin
+      .from("posts")
+      .select("id")
+      .eq("id", postId)
+      .maybeSingle();
+
+    if (postError) {
+      console.error(
+        "CHECK DELETE POST ERROR:",
+        postError
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: postError.message,
+      });
+    }
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found.",
+      });
+    }
+
+    const {
+      error: likesError,
+    } = await supabaseAdmin
+      .from("post_likes")
+      .delete()
+      .eq("post_id", postId);
+
+    if (likesError) {
+      console.error(
+        "DELETE POST LIKES ERROR:",
+        likesError
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: likesError.message,
+      });
+    }
+
+    const {
+      error: commentsError,
+    } = await supabaseAdmin
+      .from("comments")
+      .delete()
+      .eq("post_id", postId);
+
+    if (commentsError) {
+      console.error(
+        "DELETE POST COMMENTS ERROR:",
+        commentsError
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: commentsError.message,
+      });
+    }
+
+    const {
+      error: deletePostError,
+    } = await supabaseAdmin
+      .from("posts")
+      .delete()
+      .eq("id", postId);
+
+    if (deletePostError) {
+      console.error(
+        "DELETE POST ERROR:",
+        deletePostError
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: deletePostError.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Post deleted successfully.",
+    });
+  } catch (error) {
+    console.error(
+      "DELETE POST EXCEPTION:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to delete post.",
     });
   }
 }

@@ -3,6 +3,9 @@ import {
   BookOpen,
   CalendarDays,
   Loader2,
+  LockKeyhole,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 import {
@@ -14,6 +17,8 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+
+import { supabase } from "@/lib/supabaseClient";
 
 import {
   getLessonById,
@@ -42,6 +47,9 @@ export default function LessonDetailsPage() {
   const [error, setError] =
     useState<string | null>(null);
 
+  const [isAuthenticated, setIsAuthenticated] =
+    useState(false);
+
   useEffect(() => {
     if (!id) {
       setError("معرف الدرس غير موجود.");
@@ -53,6 +61,24 @@ export default function LessonDetailsPage() {
       try {
         setLoading(true);
         setError(null);
+
+        const {
+          data: {
+            user,
+          },
+        } = await supabase.auth.getUser();
+
+        /*
+         * الزائر لا يتم جلب محتوى الدرس له.
+         */
+        if (!user) {
+          setIsAuthenticated(false);
+          setLesson(null);
+          setLoading(false);
+          return;
+        }
+
+        setIsAuthenticated(true);
 
         const data =
           await getLessonById(lessonId);
@@ -98,6 +124,14 @@ export default function LessonDetailsPage() {
     navigate(-1);
   }
 
+  function handleRegister() {
+    navigate("/register");
+  }
+
+  function handleLogin() {
+    navigate("/login");
+  }
+
   if (loading) {
     return (
       <div
@@ -112,6 +146,115 @@ export default function LessonDetailsPage() {
               جاري تحميل الدرس...
             </p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * =====================================================
+   * الزائر
+   * =====================================================
+   */
+
+  if (!isAuthenticated) {
+    return (
+      <div
+        dir="rtl"
+        className="min-h-screen bg-slate-50"
+      >
+        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="mb-6 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+          >
+            <ArrowRight className="h-4 w-4" />
+            العودة إلى الدروس
+          </button>
+
+          <article className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+            {/* Header */}
+
+            <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 px-6 py-8 text-white sm:px-8 lg:px-10">
+
+              <div className="flex items-start gap-4">
+
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                  <BookOpen className="h-7 w-7" />
+                </div>
+
+                <div className="min-w-0">
+
+                  <p className="mb-2 text-sm font-medium text-white/80">
+                    درس
+                  </p>
+
+                  <h1 className="text-2xl font-bold leading-tight sm:text-3xl">
+                    محتوى الدرس
+                  </h1>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Body */}
+
+            <div className="p-6 sm:p-8 lg:p-10">
+
+              <section>
+
+                <div className="mx-auto max-w-2xl rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8 text-center sm:p-10">
+
+                  <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                    <LockKeyhole className="h-8 w-8" />
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-slate-800">
+                    أنشئ حسابًا لمشاهدة الدرس
+                  </h2>
+
+                  <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-500">
+                    محتوى هذا الدرس متاح للمستخدمين
+                    المسجلين فقط. أنشئ حسابًا مجانيًا
+                    أو سجّل الدخول للوصول إلى محتوى
+                    الدرس.
+                  </p>
+
+                  <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+
+                    <button
+                      type="button"
+                      onClick={handleRegister}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      إنشاء حساب
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleLogin}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      تسجيل الدخول
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </section>
+
+            </div>
+
+          </article>
+
         </div>
       </div>
     );

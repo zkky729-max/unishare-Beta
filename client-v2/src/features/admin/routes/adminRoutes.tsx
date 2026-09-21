@@ -30,6 +30,7 @@ import SemestersManagementPage from "../pages/SemestersManagementPage";
 import ModulesManagementPage from "../pages/ModulesManagementPage";
 import SubjectsManagementPage from "../pages/SubjectsManagementPage";
 import LessonsManagementPage from "../pages/LessonsManagementPage";
+import PostsManagementPage from "../pages/PostsManagementPage";
 
 // =====================================================
 // Admin Routes
@@ -52,6 +53,7 @@ export default function AdminRoutes() {
         ================================================= */}
 
         <Route element={<AdminLayout />}>
+
           {/* =================================================
               DASHBOARD
           ================================================= */}
@@ -77,6 +79,15 @@ export default function AdminRoutes() {
           <Route
             path="role-history"
             element={<RoleHistoryPage />}
+          />
+
+          {/* =================================================
+              POSTS
+          ================================================= */}
+
+          <Route
+            path="posts"
+            element={<PostsManagementPage />}
           />
 
           {/* =================================================
@@ -168,6 +179,7 @@ export default function AdminRoutes() {
             path="test"
             element={<TestAdminPage />}
           />
+
         </Route>
       </Route>
     </Routes>

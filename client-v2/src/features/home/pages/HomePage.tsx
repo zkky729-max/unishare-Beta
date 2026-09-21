@@ -1,93 +1,33 @@
 import {
   ArrowLeft,
   BookOpen,
+  Building2,
   GraduationCap,
-  Library,
   Users,
   University,
 } from "lucide-react";
-
 import { useNavigate } from "react-router-dom";
-
 import UniShareLogo from "../../../components/brand/UniShareLogo";
 
 export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div
-      dir="rtl"
-      className="
-        min-h-screen
-        bg-[var(--unishare-background)]
-        text-[var(--unishare-text)]
-      "
-    >
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a]">
       {/* =====================================================
           NAVBAR
       ===================================================== */}
 
-      <nav
-        className="
-          fixed
-          left-0
-          right-0
-          top-0
-          z-50
-          border-b
-          border-[var(--unishare-border)]
-          bg-white/90
-          backdrop-blur-xl
-        "
-      >
-        <div
-          className="
-            mx-auto
-            flex
-            max-w-7xl
-            items-center
-            justify-between
-            px-5
-            py-4
-            sm:px-6
-            lg:px-8
-          "
-        >
-          {/* Brand */}
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
+        <div className="relative mx-auto flex h-20 max-w-7xl items-center px-6 lg:px-8">
 
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="
-              rounded-xl
-              transition
-              hover:opacity-90
-              focus:outline-none
-              focus:ring-2
-              focus:ring-[var(--unishare-blue)]/30
-            "
-            aria-label="UniShare"
-          >
-            <UniShareLogo />
-          </button>
+          {/* أزرار الحساب */}
 
-          {/* Actions */}
-
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="absolute left-6 z-20 flex items-center gap-3 lg:left-8">
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="
-                rounded-xl
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[var(--unishare-blue)]
-                transition
-                hover:bg-blue-50
-                sm:px-5
-              "
+              className="rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
             >
               تسجيل الدخول
             </button>
@@ -95,626 +35,432 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="
-                rounded-xl
-                bg-[var(--unishare-blue)]
-                px-4
-                py-2.5
-                text-sm
-                font-bold
-                text-white
-                shadow-md
-                shadow-blue-500/20
-                transition
-                hover:-translate-y-0.5
-                hover:bg-[var(--unishare-indigo)]
-                hover:shadow-lg
-                sm:px-5
-              "
+              className="rounded-xl bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
             >
-              ابدأ الآن
+              إنشاء حساب
+            </button>
+          </div>
+
+          {/* الشعار في المنتصف */}
+
+          <div className="mx-auto flex h-full items-center justify-center">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              aria-label="UniShare"
+              className="relative z-30 flex items-center justify-center rounded-xl p-1 transition hover:scale-[1.02]"
+            >
+              <UniShareLogo />
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* =====================================================
-          HERO
+          MAIN
       ===================================================== */}
 
-      <section
-        className="
-          relative
-          overflow-hidden
-          pt-32
-          pb-20
-          text-white
-          sm:pt-36
-          sm:pb-24
-        "
-        style={{
-          backgroundImage: "var(--unishare-gradient)",
-        }}
-      >
-        {/* Decorative background */}
+      <main className="pt-20">
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            -right-32
-            -top-32
-            h-80
-            w-80
-            rounded-full
-            bg-white/10
-            blur-3xl
-          "
-        />
+        {/* ===================================================
+            HERO
+        =================================================== */}
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            -bottom-40
-            -left-32
-            h-96
-            w-96
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
-        />
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50" />
 
-        <div
-          className="
-            relative
-            mx-auto
-            grid
-            max-w-7xl
-            items-center
-            gap-12
-            px-5
-            sm:px-6
-            lg:grid-cols-2
-            lg:px-8
-          "
-        >
-          {/* =================================================
-              HERO CONTENT
-          ================================================= */}
+          <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+            <div className="mx-auto max-w-4xl text-center">
 
-          <div className="max-w-2xl">
-            <div
-              className="
-                mb-6
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                border-white/20
-                bg-white/10
-                px-4
-                py-2
-                text-sm
-                font-medium
-                text-blue-50
-                backdrop-blur
-              "
-            >
-              <GraduationCap size={17} />
+              {/* =================================================
+                  الشعار الرمزي
+              ================================================= */}
 
-              <span>
-                مجتمع جامعي واحد
-              </span>
+              <div className="mb-7 flex justify-center">
+                <UniShareLogo
+                  showText={false}
+                  className="drop-shadow-sm"
+                />
+              </div>
+
+              {/* =================================================
+                  الشارة
+              ================================================= */}
+
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-5 py-2.5 text-sm font-semibold text-blue-600 shadow-sm">
+                <GraduationCap size={18} />
+
+                من المعرفة يبدأ الطريق
+              </div>
+
+              {/* =================================================
+                  العنوان
+              ================================================= */}
+
+              <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+                ابنِ مستقبلك
+
+                <span className="mt-2 block bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 bg-clip-text text-transparent">
+                  بالعلم والنور
+                </span>
+              </h1>
+
+              {/* =================================================
+                  الوصف
+              ================================================= */}
+
+              <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-gray-600">
+                الجامعة ليست مجرد سنوات دراسية، بل مرحلة تبني فيها
+                معرفتك وشخصيتك ومستقبلك. تعلّم، شارك ما تعرفه، واستفد
+                من معرفة الآخرين، وابنِ طريقك خطوة بعد خطوة.
+              </p>
+
+              {/* =================================================
+                  الأزرار
+              ================================================= */}
+
+              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => navigate("/universities")}
+                  className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-7 py-4 font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:shadow-xl sm:w-auto"
+                >
+                  اكتشف مسارك الدراسي
+
+                  <ArrowLeft
+                    size={19}
+                    className="transition-transform group-hover:-translate-x-1"
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/register")}
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-7 py-4 font-bold text-gray-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 sm:w-auto"
+                >
+                  ابدأ رحلتك
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================
+            ACADEMIC PATH
+        =================================================== */}
+
+        <section className="border-y border-gray-100 bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
+
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
+                طريقك الأكاديمي
+              </p>
+
+              <h2 className="mt-3 text-3xl font-extrabold">
+                ابدأ من جامعتك وابنِ طريقك
+              </h2>
+
+              <p className="mt-4 leading-7 text-gray-600">
+                اكتشف المسار الأكاديمي بطريقة منظمة، من الجامعة والكلية
+                إلى القسم والتخصص والمقررات والدروس.
+              </p>
             </div>
 
-            <h1
-              className="
-                text-4xl
-                font-extrabold
-                leading-[1.25]
-                tracking-tight
-                sm:text-5xl
-                lg:text-6xl
-              "
-            >
-              منصتك الجامعية الذكية
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-              <br />
+              {/* الجامعات */}
 
-              <span className="text-blue-50">
-                شارك المعرفة وابنِ مستقبلك
-              </span>
-            </h1>
-
-            <p
-              className="
-                mt-6
-                max-w-xl
-                text-base
-                leading-8
-                text-blue-50
-                sm:text-lg
-              "
-            >
-              UniShare منصة جامعية تجمع الطلبة والأساتذة
-              والمحتوى الأكاديمي في مكان واحد، للوصول إلى
-              الدروس والملفات والامتحانات والموارد التعليمية
-              بسهولة.
-            </p>
-
-            {/* CTA */}
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
-                onClick={() => navigate("/register")}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-white
-                  px-7
-                  py-3.5
-                  font-bold
-                  text-[var(--unishare-blue)]
-                  shadow-xl
-                  shadow-blue-900/20
-                  transition
-                  hover:-translate-y-1
-                  hover:shadow-2xl
-                "
+                onClick={() => navigate("/universities")}
+                className="group rounded-2xl border border-gray-100 bg-gray-50 p-6 text-right transition hover:-translate-y-1 hover:border-blue-100 hover:bg-blue-50 hover:shadow-md"
               >
-                إنشاء حساب
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+                  <University size={24} />
+                </div>
 
-                <ArrowLeft size={18} />
+                <h3 className="font-bold">
+                  الجامعات
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-gray-500">
+                  ابدأ من المؤسسة الجامعية التي تنتمي إليها.
+                </p>
+
+                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-600">
+                  استكشف
+
+                  <ArrowLeft
+                    size={17}
+                    className="transition-transform group-hover:-translate-x-1"
+                  />
+                </div>
               </button>
 
+              {/* الكليات */}
+
               <button
                 type="button"
-                onClick={() => navigate("/login")}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-white/40
-                  bg-white/5
-                  px-7
-                  py-3.5
-                  font-bold
-                  text-white
-                  backdrop-blur
-                  transition
-                  hover:bg-white
-                  hover:text-[var(--unishare-blue)]
-                "
+                onClick={() => navigate("/faculties")}
+                className="group rounded-2xl border border-gray-100 bg-gray-50 p-6 text-right transition hover:-translate-y-1 hover:border-indigo-100 hover:bg-indigo-50 hover:shadow-md"
               >
-                تسجيل الدخول
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                  <Building2 size={24} />
+                </div>
+
+                <h3 className="font-bold">
+                  الكليات
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-gray-500">
+                  تعرّف على الكليات والمسارات الموجودة فيها.
+                </p>
+
+                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-indigo-600">
+                  استكشف
+
+                  <ArrowLeft
+                    size={17}
+                    className="transition-transform group-hover:-translate-x-1"
+                  />
+                </div>
+              </button>
+
+              {/* مجتمع المعرفة */}
+
+              <button
+                type="button"
+                onClick={() => navigate("/posts")}
+                className="group rounded-2xl border border-gray-100 bg-gray-50 p-6 text-right transition hover:-translate-y-1 hover:border-cyan-100 hover:bg-cyan-50 hover:shadow-md"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-100 text-cyan-600">
+                  <Users size={24} />
+                </div>
+
+                <h3 className="font-bold">
+                  مجتمع المعرفة
+                </h3>
+
+                <p className="mt-2 text-sm leading-6 text-gray-500">
+                  شارك المعرفة وساعد زملاءك في رحلتهم الدراسية.
+                </p>
+
+                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-cyan-600">
+                  شارك المعرفة
+
+                  <ArrowLeft
+                    size={17}
+                    className="transition-transform group-hover:-translate-x-1"
+                  />
+                </div>
               </button>
             </div>
           </div>
+        </section>
 
-          {/* =================================================
-              HERO VISUAL
-          ================================================= */}
+        {/* ===================================================
+            VALUES
+        =================================================== */}
 
-          <div className="hidden lg:flex lg:justify-center">
-            <div
-              className="
-                relative
-                w-full
-                max-w-md
-                rounded-[2rem]
-                border
-                border-white/20
-                bg-white/10
-                p-8
-                shadow-2xl
-                shadow-blue-950/20
-                backdrop-blur-xl
-              "
-            >
-              <div className="flex justify-center">
-                {/* Logo — بدون طبقة بيضاء */}
+        <section className="bg-[#f8fafc]">
+          <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
 
-                <div
-                  className="
-                    rounded-3xl
-                    bg-transparent
-                    p-6
-                  "
-                >
-                  <UniShareLogo
-                    showText={false}
-                    compact
-                    className="scale-[1.8]"
-                  />
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-widest text-indigo-500">
+                فلسفة UniShare
+              </p>
+
+              <h2 className="mt-3 text-3xl font-extrabold">
+                العلم يبني الإنسان قبل أن يبني المستقبل
+              </h2>
+
+              <p className="mt-4 leading-7 text-gray-600">
+                المعرفة الحقيقية لا تجعل الإنسان يتعالى على غيره،
+                بل تمنحه القدرة على التعلم المستمر ومشاركة الخير
+                ومساعدة من حوله.
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+
+              {/* العلم */}
+
+              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                  <BookOpen size={28} />
                 </div>
-              </div>
 
-              <div className="mt-10 text-center">
-                <h2 className="text-2xl font-extrabold">
-                  مجتمع جامعي متكامل
-                </h2>
+                <h3 className="mt-6 text-xl font-bold">
+                  اطلب العلم
+                </h3>
 
-                <p className="mt-3 text-blue-50">
-                  تعلم، شارك، وتطور مع مجتمعك الجامعي.
+                <p className="mt-3 leading-7 text-gray-600">
+                  اجعل التعلم رحلة مستمرة، وابحث عن الفهم والمعرفة
+                  قبل أي شيء آخر.
                 </p>
               </div>
 
-              <div
-                className="
-                  mt-8
-                  grid
-                  grid-cols-3
-                  gap-3
-                "
-              >
-                {[
-                  {
-                    icon: BookOpen,
-                    label: "تعلم",
-                  },
-                  {
-                    icon: Users,
-                    label: "تواصل",
-                  },
-                  {
-                    icon: GraduationCap,
-                    label: "تطور",
-                  },
-                ].map((item) => {
-                  const Icon = item.icon;
+              {/* بناء المستقبل */}
 
-                  return (
-                    <div
-                      key={item.label}
-                      className="
-                        rounded-2xl
-                        border
-                        border-white/10
-                        bg-white/10
-                        p-4
-                        text-center
-                      "
-                    >
-                      <Icon
-                        className="mx-auto"
-                        size={22}
-                      />
+              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
+                  <GraduationCap size={28} />
+                </div>
 
-                      <span className="mt-2 block text-xs font-semibold">
-                        {item.label}
-                      </span>
-                    </div>
-                  );
-                })}
+                <h3 className="mt-6 text-xl font-bold">
+                  ابنِ مستقبلك
+                </h3>
+
+                <p className="mt-3 leading-7 text-gray-600">
+                  كل درس وكل مهارة وكل تجربة هي لبنة جديدة في
+                  المستقبل الذي تعمل على بنائه.
+                </p>
+              </div>
+
+              {/* التواضع */}
+
+              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600">
+                  <Users size={28} />
+                </div>
+
+                <h3 className="mt-6 text-xl font-bold">
+                  تعلّم بتواضع
+                </h3>
+
+                <p className="mt-3 leading-7 text-gray-600">
+                  مهما تعلمنا، يبقى هناك ما يمكن أن نتعلمه من
+                  الآخرين. المعرفة تكبر عندما نتشاركها.
+                </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* =====================================================
-          STATS
-      ===================================================== */}
+        {/* ===================================================
+            ACADEMIC JOURNEY
+        =================================================== */}
 
-      <section className="relative z-10 -mt-8 px-5 sm:px-6">
-        <div
-          className="
-            mx-auto
-            grid
-            max-w-6xl
-            grid-cols-2
-            gap-4
-            md:grid-cols-4
-          "
-        >
-          {[
-            {
-              icon: University,
-              title: "الجامعات",
-            },
-            {
-              icon: BookOpen,
-              title: "المقررات",
-            },
-            {
-              icon: Library,
-              title: "الموارد",
-            },
-            {
-              icon: Users,
-              title: "الطلبة",
-            },
-          ].map((item) => {
-            const Icon = item.icon;
+        <section className="bg-white">
+          <div className="mx-auto max-w-6xl px-6 py-20 lg:px-8">
 
-            return (
-              <div
-                key={item.title}
-                className="
-                  rounded-2xl
-                  border
-                  border-[var(--unishare-border)]
-                  bg-white
-                  p-5
-                  text-center
-                  shadow-lg
-                  shadow-slate-900/5
-                  transition
-                  hover:-translate-y-1
-                  hover:shadow-xl
-                "
-              >
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-12
-                    w-12
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-[var(--unishare-gradient-soft)]
-                    text-[var(--unishare-blue)]
-                  "
-                >
-                  <Icon size={23} />
-                </div>
+            <div className="rounded-[2rem] border border-gray-100 bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-8 sm:p-12">
 
-                <h3 className="mt-3 font-bold text-[var(--unishare-navy)]">
-                  {item.title}
-                </h3>
+              <div className="mx-auto max-w-3xl text-center">
+                <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
+                  رحلتك الدراسية
+                </p>
+
+                <h2 className="mt-3 text-3xl font-extrabold">
+                  من الجامعة إلى الدرس
+                </h2>
+
+                <p className="mt-5 leading-8 text-gray-600">
+                  اجعل طريقك الدراسي واضحًا ومنظمًا، وانتقل من المرحلة
+                  الأكبر إلى التفاصيل التي تحتاجها في رحلتك التعليمية.
+                </p>
               </div>
-            );
-          })}
-        </div>
-      </section>
 
-      {/* =====================================================
-          FEATURES
-      ===================================================== */}
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold">
 
-      <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <span
-              className="
-                inline-flex
-                rounded-full
-                bg-blue-50
-                px-4
-                py-2
-                text-sm
-                font-bold
-                text-[var(--unishare-blue)]
-              "
-            >
-              لماذا UniShare؟
-            </span>
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  الجامعة
+                </span>
 
-            <h2
-              className="
-                mt-4
-                text-3xl
-                font-extrabold
-                tracking-tight
-                text-[var(--unishare-navy)]
-                sm:text-4xl
-              "
-            >
-              كل ما يحتاجه الطالب في مكان واحد
+                <ArrowLeft size={17} className="text-blue-400" />
+
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  الكلية
+                </span>
+
+                <ArrowLeft size={17} className="text-blue-400" />
+
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  القسم
+                </span>
+
+                <ArrowLeft size={17} className="text-blue-400" />
+
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  التخصص
+                </span>
+
+                <ArrowLeft size={17} className="text-blue-400" />
+
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  المقياس
+                </span>
+
+                <ArrowLeft size={17} className="text-blue-400" />
+
+                <span className="rounded-full bg-white px-5 py-3 shadow-sm">
+                  الدرس
+                </span>
+              </div>
+
+              <div className="mt-10 text-center">
+                <button
+                  type="button"
+                  onClick={() => navigate("/universities")}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-7 py-4 font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
+                >
+                  ابدأ من جامعتك
+
+                  <ArrowLeft size={19} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================
+            FINAL CTA
+        =================================================== */}
+
+        <section className="px-6 py-20">
+          <div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-8 py-16 text-center text-white shadow-xl lg:px-16">
+
+            <h2 className="text-3xl font-extrabold sm:text-4xl">
+              ابنِ مستقبلك بالعلم والنور
             </h2>
 
-            <p className="mt-4 leading-7 text-[var(--unishare-muted)]">
-              منصة مصممة لتجعل الحياة الجامعية أكثر سهولة،
-              تفاعلاً وتنظيماً.
+            <p className="mx-auto mt-5 max-w-2xl leading-8 text-blue-50">
+              ابدأ رحلتك الأكاديمية، تعلّم باستمرار، شارك معرفتك،
+              وابقَ متواضعًا مهما وصلت.
             </p>
+
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="mt-8 rounded-2xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
+            >
+              ابدأ رحلتك
+            </button>
           </div>
-
-          <div
-            className="
-              mt-12
-              grid
-              gap-6
-              md:grid-cols-3
-            "
-          >
-            {[
-              {
-                icon: University,
-                title: "الجامعات",
-                text: "استكشف الجامعات والكليات والتخصصات وابحث عن المسار الأكاديمي المناسب لك.",
-              },
-              {
-                icon: BookOpen,
-                title: "المصادر التعليمية",
-                text: "الوصول إلى المحاضرات والملفات العلمية والموارد الأكاديمية بسهولة.",
-              },
-              {
-                icon: Library,
-                title: "الامتحانات السابقة",
-                text: "استعد لامتحاناتك من خلال الوصول إلى نماذج ومصادر أكاديمية مفيدة.",
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="
-                    group
-                    rounded-3xl
-                    border
-                    border-[var(--unishare-border)]
-                    bg-white
-                    p-7
-                    shadow-sm
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:border-blue-200
-                    hover:shadow-xl
-                    hover:shadow-blue-500/10
-                  "
-                >
-                  <div
-                    className="
-                      flex
-                      h-14
-                      w-14
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-[var(--unishare-gradient-soft)]
-                      text-[var(--unishare-blue)]
-                      transition
-                      group-hover:scale-105
-                    "
-                  >
-                    <Icon size={27} />
-                  </div>
-
-                  <h3
-                    className="
-                      mt-6
-                      text-xl
-                      font-extrabold
-                      text-[var(--unishare-navy)]
-                    "
-                  >
-                    {item.title}
-                  </h3>
-
-                  <p
-                    className="
-                      mt-3
-                      leading-7
-                      text-[var(--unishare-muted)]
-                    "
-                  >
-                    {item.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================
-          CTA
-      ===================================================== */}
-
-      <section
-        className="
-          relative
-          overflow-hidden
-          bg-[var(--unishare-navy)]
-          py-20
-          text-center
-          text-white
-        "
-      >
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-0
-            h-64
-            w-64
-            -translate-x-1/2
-            rounded-full
-            bg-blue-500/20
-            blur-3xl
-          "
-        />
-
-        <div className="relative mx-auto max-w-3xl px-5 sm:px-6">
-          <div className="flex justify-center">
-            <UniShareLogo
-              showText={false}
-              compact
-              className="rounded-2xl bg-white p-3"
-            />
-          </div>
-
-          <h2 className="mt-7 text-3xl font-extrabold sm:text-4xl">
-            جاهز للانضمام إلى UniShare؟
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-300">
-            ابدأ رحلتك الجامعية، تواصل مع مجتمعك وشارك المعرفة.
-          </p>
-
-          <button
-            type="button"
-            onClick={() => navigate("/register")}
-            className="
-              mt-8
-              inline-flex
-              items-center
-              gap-2
-              rounded-xl
-              px-8
-              py-3.5
-              font-bold
-              text-white
-              shadow-lg
-              shadow-blue-500/20
-              transition
-              hover:-translate-y-1
-              hover:shadow-xl
-            "
-            style={{
-              backgroundImage: "var(--unishare-gradient)",
-            }}
-          >
-            إنشاء حساب مجاني
-
-            <ArrowLeft size={18} />
-          </button>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* =====================================================
           FOOTER
       ===================================================== */}
 
-      <footer
-        className="
-          border-t
-          border-slate-800
-          bg-slate-950
-          px-5
-          py-8
-          text-center
-          text-sm
-          text-slate-400
-        "
-      >
-        <div className="flex justify-center">
-          <UniShareLogo
-            showText={false}
-            compact
-          />
+      <footer className="border-t border-gray-100 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-sm text-gray-500 sm:flex-row lg:px-8">
+
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            aria-label="UniShare"
+            className="flex items-center justify-center"
+          >
+            <UniShareLogo />
+          </button>
+
+          <p>
+            © {new Date().getFullYear()} UniShare. جميع الحقوق محفوظة.
+          </p>
         </div>
-
-        <p className="mt-4">
-          © 2026 UniShare
-        </p>
-
-        <p className="mt-1">
-          جميع الحقوق محفوظة
-        </p>
       </footer>
     </div>
   );

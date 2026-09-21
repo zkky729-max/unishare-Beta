@@ -162,6 +162,86 @@ export default function App() {
         />
 
         {/* =================================================
+            PUBLIC ACADEMIC AREA
+            متاح للزائر بدون تسجيل
+        ================================================= */}
+
+        {/* البلدان */}
+
+        <Route
+          path="/countries"
+          element={<CountriesPage />}
+        />
+
+        <Route
+          path="/countries/:countryId"
+          element={<CountryDetailsPage />}
+        />
+
+        {/* الجامعات */}
+
+        <Route
+          path="/universities"
+          element={<UniversitiesPage />}
+        />
+
+        <Route
+          path="/universities/:slug"
+          element={<UniversityDetailsPage />}
+        />
+
+        {/* الكليات */}
+
+        <Route
+          path="/faculties"
+          element={<Faculties />}
+        />
+
+        {/* المسار القديم يبقى موجودًا حاليًا
+            حتى لا نكسر أي جزء آخر من التطبيق */}
+
+        <Route
+          path="/faculties/:id/specialties"
+          element={<FacultySpacePage />}
+        />
+
+        {/* الأقسام */}
+
+        <Route
+          path="/departments"
+          element={<DepartmentsPage />}
+        />
+
+        <Route
+          path="/departments/:id"
+          element={<DepartmentDetailsPage />}
+        />
+
+        {/* السداسيات */}
+
+        <Route
+          path="/levels/:levelId/semesters"
+          element={<Semesters />}
+        />
+
+        <Route
+          path="/semesters/:semesterId"
+          element={<SemesterSpacePage />}
+        />
+
+        {/* الدروس */}
+
+        <Route
+          path="/subjects/:subjectId/lessons"
+          element={<LessonsPage />}
+        />
+
+        <Route
+          path="/lessons/:id"
+          element={<LessonDetailsPage />}
+        />
+
+        {/* =================================================
             ADMIN ROUTES
         ================================================= */}
 
@@ -172,6 +252,7 @@ export default function App() {
 
         {/* =================================================
             PROTECTED AREA
+            الصفحات التي تحتاج حسابًا
         ================================================= */}
 
         <Route element={<ProtectedRoute />}>
@@ -190,8 +271,6 @@ export default function App() {
             {/* =============================================
                 PROFILE
             ============================================= */}
-
-            {/* بروفايل المستخدم الحالي */}
 
             <Route
               path="/profile"
@@ -258,97 +337,6 @@ export default function App() {
                   <PostsPage />
                 </FeedProvider>
               }
-            />
-
-            {/* =============================================
-                COUNTRIES
-            ============================================= */}
-
-            <Route
-              path="/countries"
-              element={<CountriesPage />}
-            />
-
-            <Route
-              path="/countries/:countryId"
-              element={<CountryDetailsPage />}
-            />
-
-            {/* =============================================
-                UNIVERSITIES
-            ============================================= */}
-
-            <Route
-              path="/universities"
-              element={<UniversitiesPage />}
-            />
-
-            <Route
-              path="/universities/:slug"
-              element={<UniversityDetailsPage />}
-            />
-
-            {/* =============================================
-                FACULTIES
-            ============================================= */}
-
-            <Route
-              path="/faculties"
-              element={<Faculties />}
-            />
-
-            {/* المسار القديم يبقى موجودًا حاليًا
-                حتى لا نكسر أي جزء آخر من التطبيق */}
-
-            <Route
-              path="/faculties/:id/specialties"
-              element={<FacultySpacePage />}
-            />
-
-            {/* =============================================
-                DEPARTMENTS
-            ============================================= */}
-
-            <Route
-              path="/departments"
-              element={<DepartmentsPage />}
-            />
-
-            <Route
-              path="/departments/:id"
-              element={<DepartmentDetailsPage />}
-            />
-
-            {/* =============================================
-                SEMESTERS
-            ============================================= */}
-
-            <Route
-              path="/levels/:levelId/semesters"
-              element={<Semesters />}
-            />
-
-            <Route
-              path="/semesters/:semesterId"
-              element={<SemesterSpacePage />}
-            />
-
-            {/* =============================================
-                LESSONS
-            ============================================= */}
-
-            {/* صفحة دروس المقياس */}
-
-            <Route
-              path="/subjects/:subjectId/lessons"
-              element={<LessonsPage />}
-            />
-
-            {/* صفحة تفاصيل الدرس */}
-
-            <Route
-              path="/lessons/:id"
-              element={<LessonDetailsPage />}
             />
 
           </Route>

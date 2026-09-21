@@ -1,857 +1,828 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import {
-  BookOpen,
+  ArrowLeft,
+  Award,
   Calendar,
   Edit3,
+  Gem,
   GraduationCap,
+  Loader2,
+  MapPin,
   MessageCircle,
-  PenLine,
   User,
-  UserPlus,
-  UserRound,
 } from "lucide-react";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 import { supabase } from "../../../lib/supabaseClient";
 
 import PostCard from "../../posts/components/PostCard";
 import type { Post } from "../../posts/types/post";
+import { getPosts } from "../../posts/api/getPosts";
 
-import GemsCard from "../../gamification/components/GemsCard";
-import BadgeCard from "../../gamification/components/BadgeCard";
-import { getUserGamification } from "../../gamification/api/getGamification";
-import { getGamificationBadges } from "../../gamification/api/getBadges";
-
-import { sendFriendRequest } from "../../friends/api/sendFriendRequest";
-import { createConversation } from "../../messages/api/createConversation";
+import {
+  getUserGamification,
+} from "../../gamification/api/gamification";
 
 import type {
+  UserGamification,
   GamificationBadge,
-  UserBadge,
 } from "../../gamification/types/gamification";
 
 // =====================================================
-// TYPES
+// Types
 // =====================================================
 
 interface ProfileData {
   id: string;
-  user_id?: string;
+  user_id: string;
+
   full_name: string | null;
   username: string | null;
   bio: string | null;
+
   age: number | null;
+
   avatar_url: string | null;
+
   faculty_id: string | null;
   specialty_id: string | null;
 }
 
 interface FacultyData {
+  id: string;
   name: string;
 }
 
 interface SpecialtyData {
+  id: string;
   name: string;
 }
 
+interface ProfileProps {
+  userId?: string;
+}
+
 // =====================================================
-// COMPONENT
+// Component
 // =====================================================
 
-export default function Profile() {
+export default function Profile({
+  userId: propUserId,
+}: ProfileProps) {
+  const { userId: routeUserId } =
+    useParams();
+
   const navigate = useNavigate();
-  const { userId: routeUserId } = useParams<{ userId: string }>();
 
   // ===================================================
-  // PROFILE STATE
+  // Current User
   // ===================================================
 
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [faculty, setFaculty] = useState<FacultyData | null>(null);
-  const [specialty, setSpecialty] = useState<SpecialtyData | null>(null);
-
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [postsCount, setPostsCount] = useState(0);
-
-  const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] =
+    useState<string | null>(null);
 
   // ===================================================
-  // CURRENT USER / PROFILE OWNER
+  // Profile
   // ===================================================
 
-  const [profileUserId, setProfileUserId] = useState<string | null>(null);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [profile, setProfile] =
+    useState<ProfileData | null>(null);
+
+  const [faculty, setFaculty] =
+    useState<FacultyData | null>(null);
+
+  const [specialty, setSpecialty] =
+    useState<SpecialtyData | null>(null);
 
   // ===================================================
-  // FRIEND STATE
+  // Posts
   // ===================================================
 
-  const [friendRequestLoading, setFriendRequestLoading] =
-    useState(false);
-
-  const [friendRequestSent, setFriendRequestSent] =
-    useState(false);
+  const [posts, setPosts] =
+    useState<Post[]>([]);
 
   // ===================================================
-  // MESSAGE STATE
+  // Gamification
   // ===================================================
 
-  const [messageLoading, setMessageLoading] = useState(false);
+  const [gamification, setGamification] =
+    useState<UserGamification | null>(
+      null
+    );
+
+  const [badges, setBadges] =
+    useState<GamificationBadge[]>([]);
 
   // ===================================================
-  // GAMIFICATION STATE
+  // Loading
   // ===================================================
 
-  const [gems, setGems] = useState(0);
-  const [badges, setBadges] = useState<GamificationBadge[]>([]);
-  const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
-  const [gamificationLoading, setGamificationLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   // ===================================================
-  // LOAD
+  // Error
+  // ===================================================
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  // ===================================================
+  // Load Profile
   // ===================================================
 
   useEffect(() => {
-    loadProfile();
-  }, [routeUserId]);
+    let mounted = true;
 
-  // ===================================================
-  // LOAD PROFILE
-  // ===================================================
-
-  async function loadProfile() {
-    try {
-      setLoading(true);
-      setGamificationLoading(true);
-
-      // Reset previous profile data when navigating
-      // from one user profile to another.
-      setProfile(null);
-      setFaculty(null);
-      setSpecialty(null);
-      setPosts([]);
-      setPostsCount(0);
-      setGems(0);
-      setBadges([]);
-      setUserBadges([]);
-
-      setFriendRequestLoading(false);
-      setFriendRequestSent(false);
-      setMessageLoading(false);
-
-      // -----------------------------------------------
-      // CURRENT AUTH USER
-      // -----------------------------------------------
-
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError) {
-        throw userError;
-      }
-
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      // -----------------------------------------------
-      // TARGET USER
-      // -----------------------------------------------
-
-      const targetUserId = routeUserId || user.id;
-
-      setProfileUserId(targetUserId);
-      setIsOwnProfile(targetUserId === user.id);
-
-      // -----------------------------------------------
-      // PROFILE
-      // -----------------------------------------------
-
-      const { data: profileData, error: profileError } =
-        await supabase
-          .from("profiles")
-          .select(
-            `
-              id,
-              user_id,
-              full_name,
-              username,
-              bio,
-              age,
-              avatar_url,
-              faculty_id,
-              specialty_id
-            `
-          )
-          .eq("user_id", targetUserId)
-          .maybeSingle();
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      if (!profileData) {
-        setProfile(null);
-        setGamificationLoading(false);
-        return;
-      }
-
-      setProfile(profileData);
-
-      // -----------------------------------------------
-      // FACULTY
-      // -----------------------------------------------
-
-      if (profileData.faculty_id) {
-        const { data: facultyData, error: facultyError } =
-          await supabase
-            .from("faculties")
-            .select("name")
-            .eq("id", profileData.faculty_id)
-            .maybeSingle();
-
-        if (!facultyError && facultyData) {
-          setFaculty(facultyData);
-        }
-      }
-
-      // -----------------------------------------------
-      // SPECIALTY
-      // -----------------------------------------------
-
-      if (profileData.specialty_id) {
-        const { data: specialtyData, error: specialtyError } =
-          await supabase
-            .from("specialties")
-            .select("name")
-            .eq("id", profileData.specialty_id)
-            .maybeSingle();
-
-        if (!specialtyError && specialtyData) {
-          setSpecialty(specialtyData);
-        }
-      }
-
-      // -----------------------------------------------
-      // POSTS COUNT
-      // -----------------------------------------------
-
-      const { count: countData, error: countError } =
-        await supabase
-          .from("posts")
-          .select("id", {
-            count: "exact",
-            head: true,
-          })
-          .eq("user_id", targetUserId);
-
-      if (!countError) {
-        setPostsCount(countData ?? 0);
-      }
-
-      // -----------------------------------------------
-      // USER POSTS
-      // -----------------------------------------------
-
-      const { data: postsData, error: postsError } =
-        await supabase
-          .from("posts")
-          .select("*")
-          .eq("user_id", targetUserId)
-          .order("created_at", {
-            ascending: false,
-          });
-
-      if (!postsError && postsData) {
-        setPosts(postsData as Post[]);
-      }
-
-      // -----------------------------------------------
-      // GAMIFICATION
-      // -----------------------------------------------
-
+    async function loadProfile() {
       try {
-        const [gamificationData, badgesData] = await Promise.all([
-          getUserGamification(targetUserId),
-          getGamificationBadges(targetUserId),
-        ]);
+        setLoading(true);
+        setError(null);
 
-        setGems(gamificationData.gamification?.gems ?? 0);
-        setBadges(badgesData.badges ?? []);
-        setUserBadges(badgesData.userBadges ?? []);
-      } catch (gamificationError) {
-        console.error(
-          "Error loading profile gamification:",
-          gamificationError
+        // =============================================
+        // Current User
+        // =============================================
+
+        const {
+          data: {
+            user,
+          },
+        } =
+          await supabase.auth.getUser();
+
+        if (!mounted) return;
+
+        setCurrentUserId(
+          user?.id ?? null
         );
 
-        // Gamification failure must not prevent
-        // the profile itself from appearing.
-        setGems(0);
-        setBadges([]);
-        setUserBadges([]);
+        const targetId =
+          propUserId ??
+          routeUserId ??
+          user?.id;
+
+        if (!targetId) {
+          setError(
+            "لم يتم العثور على المستخدم."
+          );
+
+          setLoading(false);
+          return;
+        }
+
+        // =============================================
+        // Profile
+        // =============================================
+
+        const {
+          data: profileData,
+          error: profileError,
+        } = await supabase
+          .from("profiles")
+          .select(`
+            id,
+            user_id,
+            full_name,
+            username,
+            bio,
+            age,
+            avatar_url,
+            faculty_id,
+            specialty_id
+          `)
+          .eq(
+            "user_id",
+            targetId
+          )
+          .maybeSingle();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        if (!profileData) {
+          setError(
+            "هذا الملف الشخصي غير موجود."
+          );
+
+          setLoading(false);
+          return;
+        }
+
+        if (!mounted) return;
+
+        setProfile(
+          profileData as ProfileData
+        );
+
+        // =============================================
+        // Faculty
+        // =============================================
+
+        if (
+          profileData.faculty_id
+        ) {
+          const {
+            data: facultyData,
+            error: facultyError,
+          } =
+            await supabase
+              .from("faculties")
+              .select(`
+                id,
+                name
+              `)
+              .eq(
+                "id",
+                profileData.faculty_id
+              )
+              .maybeSingle();
+
+          if (facultyError) {
+            console.error(
+              "PROFILE FACULTY ERROR:",
+              facultyError
+            );
+          }
+
+          if (mounted) {
+            setFaculty(
+              facultyData as FacultyData | null
+            );
+          }
+        } else {
+          setFaculty(null);
+        }
+
+        // =============================================
+        // Specialty
+        // =============================================
+
+        if (
+          profileData.specialty_id
+        ) {
+          const {
+            data: specialtyData,
+            error: specialtyError,
+          } =
+            await supabase
+              .from("specialties")
+              .select(`
+                id,
+                name
+              `)
+              .eq(
+                "id",
+                profileData.specialty_id
+              )
+              .maybeSingle();
+
+          if (specialtyError) {
+            console.error(
+              "PROFILE SPECIALTY ERROR:",
+              specialtyError
+            );
+          }
+
+          if (mounted) {
+            setSpecialty(
+              specialtyData as SpecialtyData | null
+            );
+          }
+        } else {
+          setSpecialty(null);
+        }
+
+        // =============================================
+        // Posts
+        // =============================================
+        //
+        // IMPORTANT:
+        // We use getPosts() so every post has the
+        // complete Post structure expected by PostCard.
+        //
+        // Then we keep only posts belonging to this
+        // profile.
+        // =============================================
+
+        try {
+          const allPosts =
+            await getPosts("all");
+
+          const userPosts =
+            allPosts.filter(
+              (post) =>
+                post.author?.id ===
+                targetId
+            );
+
+          if (mounted) {
+            setPosts(userPosts);
+          }
+        } catch (postsError) {
+          console.error(
+            "PROFILE POSTS ERROR:",
+            postsError
+          );
+
+          if (mounted) {
+            setPosts([]);
+          }
+        }
+
+        // =============================================
+        // Gamification
+        // =============================================
+
+        try {
+          const userGamification =
+            await getUserGamification(
+              targetId
+            );
+
+          if (mounted) {
+            setGamification(
+              userGamification
+            );
+          }
+        } catch (gamificationError) {
+          console.error(
+            "PROFILE GAMIFICATION ERROR:",
+            gamificationError
+          );
+
+          if (mounted) {
+            setGamification(null);
+          }
+        }
+
+        // =============================================
+        // User Badges
+        // =============================================
+
+        try {
+          const {
+            data: userBadgesData,
+            error: userBadgesError,
+          } =
+            await supabase
+              .from("user_badges")
+              .select(`
+                badge_id
+              `)
+              .eq(
+                "user_id",
+                targetId
+              );
+
+          if (userBadgesError) {
+            throw userBadgesError;
+          }
+
+          const badgeIds =
+            (
+              userBadgesData ?? []
+            )
+              .map(
+                (item) =>
+                  item.badge_id
+              )
+              .filter(
+                (
+                  id
+                ): id is string =>
+                  Boolean(id)
+              );
+
+          if (
+            badgeIds.length ===
+            0
+          ) {
+            if (mounted) {
+              setBadges([]);
+            }
+          } else {
+            const {
+              data: badgesData,
+              error: badgesError,
+            } =
+              await supabase
+                .from(
+                  "gamification_badges"
+                )
+                .select(`
+                  id,
+                  name,
+                  description,
+                  icon,
+                  rarity,
+                  requirement_type,
+                  requirement_value,
+                  gem_reward,
+                  created_at
+                `)
+                .in(
+                  "id",
+                  badgeIds
+                );
+
+            if (badgesError) {
+              throw badgesError;
+            }
+
+            if (mounted) {
+              setBadges(
+                (badgesData ??
+                  []) as GamificationBadge[]
+              );
+            }
+          }
+        } catch (badgesError) {
+          console.error(
+            "PROFILE BADGES ERROR:",
+            badgesError
+          );
+
+          if (mounted) {
+            setBadges([]);
+          }
+        }
+      } catch (err) {
+        console.error(
+          "PROFILE LOAD ERROR:",
+          err
+        );
+
+        if (mounted) {
+          setError(
+            "حدث خطأ أثناء تحميل الملف الشخصي."
+          );
+        }
       } finally {
-        setGamificationLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
-    } catch (error) {
-      console.error("Error loading profile:", error);
-      setGamificationLoading(false);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ===================================================
-  // SEND FRIEND REQUEST
-  // ===================================================
-
-  async function handleAddFriend() {
-    if (!profileUserId || isOwnProfile) {
-      return;
     }
 
-    try {
-      setFriendRequestLoading(true);
+    loadProfile();
 
-      await sendFriendRequest(profileUserId);
-
-      setFriendRequestSent(true);
-    } catch (error) {
-      console.error("Error sending friend request:", error);
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "حدث خطأ أثناء إرسال طلب الصداقة";
-
-      window.alert(message);
-    } finally {
-      setFriendRequestLoading(false);
-    }
-  }
+    return () => {
+      mounted = false;
+    };
+  }, [
+    propUserId,
+    routeUserId,
+  ]);
 
   // ===================================================
-  // OPEN MESSAGE
-  // ===================================================
-
-  async function handleSendMessage() {
-    if (!profileUserId || isOwnProfile) {
-      return;
-    }
-
-    try {
-      setMessageLoading(true);
-
-      const conversationId =
-        await createConversation(profileUserId);
-
-      navigate(`/messages/${conversationId}`);
-    } catch (error) {
-      console.error("Error opening conversation:", error);
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "حدث خطأ أثناء فتح المحادثة";
-
-      window.alert(message);
-    } finally {
-      setMessageLoading(false);
-    }
-  }
-
-  // ===================================================
-  // LOADING
+  // Loading
   // ===================================================
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          جاري تحميل الملف الشخصي...
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2
+          className="w-8 h-8 animate-spin text-blue-600"
+        />
       </div>
     );
   }
 
   // ===================================================
-  // NO PROFILE
+  // Error
   // ===================================================
 
-  if (!profile) {
+  if (
+    error ||
+    !profile
+  ) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4">
         <div className="text-center">
-          <UserRound className="mx-auto h-12 w-12 text-gray-400" />
+          <User className="w-16 h-16 mx-auto mb-4 text-slate-300" />
 
-          <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
-            الملف الشخصي غير موجود
-          </h2>
+          <h1 className="text-xl font-bold text-slate-900 mb-2">
+            {error ??
+              "الملف الشخصي غير موجود"}
+          </h1>
 
-          {isOwnProfile && (
-            <button
-              type="button"
-              onClick={() => navigate("/complete-profile")}
-              className="mt-5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              إكمال الملف الشخصي
-            </button>
-          )}
+          <button
+            onClick={() =>
+              navigate(-1)
+            }
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            العودة
+          </button>
         </div>
       </div>
     );
   }
 
   // ===================================================
-  // UNLOCKED BADGES
+  // Owner
   // ===================================================
 
-  const unlockedBadgeIds = new Set(
-    userBadges.map((userBadge) => userBadge.badge_id)
-  );
-
-  const unlockedBadges = badges.filter((badge) =>
-    unlockedBadgeIds.has(badge.id)
-  );
+  const isOwner =
+    currentUserId ===
+    profile.user_id;
 
   // ===================================================
-  // PROFILE LABELS
-  // ===================================================
-
-  const profileName = profile.full_name || "مستخدم UniShare";
-
-  // ===================================================
-  // UI
+  // Render
   // ===================================================
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-      {/* =================================================
-          PROFILE HEADER
-      ================================================= */}
+    <div
+      dir="rtl"
+      className="min-h-screen bg-slate-50"
+    >
+      {/* ================================================= */}
+      {/* Header */}
+      {/* ================================================= */}
 
-      <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="h-32 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500" />
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-5xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() =>
+                navigate(-1)
+              }
+              className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              العودة
+            </button>
 
-        <div className="px-5 pb-6 sm:px-8">
-          <div className="-mt-14 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end">
-              {/* Avatar */}
-              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-md dark:border-gray-900 dark:bg-gray-800">
-                {profile.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt={profileName}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <User className="h-12 w-12 text-gray-400" />
-                )}
-              </div>
-
-              <div className="pb-1">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {profileName}
-                </h1>
-
-                {profile.username && (
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    @{profile.username}
-                  </p>
-                )}
-
-                {profile.bio && (
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-                    {profile.bio}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* =================================================
-                PROFILE ACTIONS
-            ================================================= */}
-
-            <div className="flex flex-wrap items-center gap-2">
-              {!isOwnProfile && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleAddFriend}
-                    disabled={
-                      friendRequestLoading ||
-                      friendRequestSent
-                    }
-                    className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
-                      friendRequestSent
-                        ? "cursor-default bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400"
-                        : "bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                    }`}
-                  >
-                    <UserPlus className="h-4 w-4" />
-
-                    {friendRequestLoading
-                      ? "جاري الإرسال..."
-                      : friendRequestSent
-                        ? "تم إرسال الطلب"
-                        : "إضافة صديق"}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleSendMessage}
-                    disabled={messageLoading}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-
-                    {messageLoading
-                      ? "جاري الفتح..."
-                      : "إرسال رسالة"}
-                  </button>
-                </>
-              )}
-
-              {/* Edit button only for own profile */}
-              {isOwnProfile && (
-                <button
-                  type="button"
-                  onClick={() => navigate("/profile/edit")}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                >
-                  <Edit3 className="h-4 w-4" />
-                  تعديل الملف
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* =================================================
-              STATS
-          ================================================= */}
-
-          <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-              <div className="flex items-center gap-3">
-                <PenLine className="h-5 w-5 text-blue-600" />
-
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    المنشورات
-                  </p>
-
-                  <p className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-                    {postsCount}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-              <div className="flex items-center gap-3">
-                <GraduationCap className="h-5 w-5 text-indigo-600" />
-
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    التخصص
-                  </p>
-
-                  <p className="mt-1 truncate text-lg font-bold text-gray-900 dark:text-white">
-                    {specialty?.name || "غير محدد"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-5 w-5 text-cyan-600" />
-
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    الكلية
-                  </p>
-
-                  <p className="mt-1 truncate text-lg font-bold text-gray-900 dark:text-white">
-                    {faculty?.name || "غير محددة"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =================================================
-          GAMIFICATION
-      ================================================= */}
-
-      {!gamificationLoading && (
-        <section className="mt-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                المكافآت والإنجازات
-              </h2>
-
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                جواهر وبادجات{" "}
-                {isOwnProfile
-                  ? "الخاصة بك"
-                  : `الخاصة بـ ${profileName}`}
-              </p>
-            </div>
-
-            {isOwnProfile && (
-              <button
-                type="button"
-                onClick={() => navigate("/gamification")}
-                className="rounded-xl px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950"
+            {isOwner && (
+              <Link
+                to="/profile/edit"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
               >
-                عرض الكل
-              </button>
+                <Edit3 className="w-4 h-4" />
+                تعديل الملف
+              </Link>
             )}
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {/* Gems */}
-            <div className="lg:col-span-1">
-              <GemsCard gems={gems} />
+          {/* ================================================= */}
+          {/* Profile Info */}
+          {/* ================================================= */}
+
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+            {/* Avatar */}
+
+            <div className="shrink-0">
+              {profile.avatar_url ? (
+                <img
+                  src={
+                    profile.avatar_url
+                  }
+                  alt={
+                    profile.full_name ??
+                    "صورة المستخدم"
+                  }
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                />
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-slate-100 border-4 border-white shadow-md flex items-center justify-center">
+                  <User className="w-12 h-12 text-slate-400" />
+                </div>
+              )}
             </div>
 
-            {/* Badges */}
-            <div className="lg:col-span-2">
-              <div className="h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white">
-                      البادجات
-                    </h3>
+            {/* Main Info */}
 
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      {unlockedBadges.length} من {badges.length} بادج مفتوح
-                    </p>
+            <div className="flex-1 text-center md:text-right">
+              <h1 className="text-2xl font-bold text-slate-900">
+                {profile.full_name ??
+                  profile.username ??
+                  "مستخدم"}
+              </h1>
+
+              {profile.username && (
+                <p className="text-slate-500 mt-1">
+                  @{profile.username}
+                </p>
+              )}
+
+              {profile.bio && (
+                <p className="text-slate-600 mt-3 max-w-2xl leading-7">
+                  {profile.bio}
+                </p>
+              )}
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
+                {faculty && (
+                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-50 text-blue-700 text-sm">
+                    <GraduationCap className="w-4 h-4" />
+                    {faculty.name}
                   </div>
+                )}
 
-                  <span className="text-2xl">🏆</span>
-                </div>
-
-                {badges.length === 0 ? (
-                  <div className="rounded-xl bg-gray-50 px-4 py-8 text-center dark:bg-gray-800/60">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      لا توجد بادجات متاحة حاليًا.
-                    </p>
+                {specialty && (
+                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-sm">
+                    <MapPin className="w-4 h-4" />
+                    {specialty.name}
                   </div>
-                ) : (
-                  <div className="grid gap-4">
-                    {badges.slice(0, 3).map((badge) => (
-                      <BadgeCard
-                        key={badge.id}
-                        badge={badge}
-                        unlocked={unlockedBadgeIds.has(badge.id)}
-                      />
-                    ))}
+                )}
+
+                {profile.age !== null && (
+                  <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm">
+                    <Calendar className="w-4 h-4" />
+                    {profile.age} سنة
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* =================================================
-          ACADEMIC INFO
-      ================================================= */}
-
-      <section className="mt-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950">
-            <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          </div>
-
-          <div>
-            <h2 className="font-bold text-gray-900 dark:text-white">
-              المعلومات الأكاديمية
-            </h2>
-
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              المسار الدراسي
-            </p>
-          </div>
         </div>
+      </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-            <div className="flex items-center gap-3">
-              <BookOpen className="h-5 w-5 text-indigo-600" />
+      {/* ================================================= */}
+      {/* Main */}
+      {/* ================================================= */}
 
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  الكلية
-                </p>
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        {/* ================================================= */}
+        {/* Stats */}
+        {/* ================================================= */}
 
-                <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                  {faculty?.name || "غير محددة"}
-                </p>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center">
+            <div className="text-2xl font-bold text-slate-900">
+              {posts.length}
+            </div>
+
+            <div className="text-sm text-slate-500 mt-1">
+              المنشورات
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-            <div className="flex items-center gap-3">
-              <GraduationCap className="h-5 w-5 text-indigo-600" />
-
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  التخصص
-                </p>
-
-                <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                  {specialty?.name || "غير محدد"}
-                </p>
-              </div>
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center">
+            <div className="text-2xl font-bold text-slate-900">
+              {gamification?.gems ??
+                0}
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* =================================================
-          PERSONAL INFO
-      ================================================= */}
-
-      <section className="mt-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950">
-            <UserRound className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-          </div>
-
-          <div>
-            <h2 className="font-bold text-gray-900 dark:text-white">
-              المعلومات الشخصية
-            </h2>
-
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              المعلومات الأساسية
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-gray-500" />
-
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  الاسم الكامل
-                </p>
-
-                <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                  {profile.full_name || "غير محدد"}
-                </p>
-              </div>
+            <div className="flex items-center justify-center gap-1 text-sm text-slate-500 mt-1">
+              <Gem className="w-4 h-4" />
+              الجواهر
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/60">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-gray-500" />
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center">
+            <div className="text-2xl font-bold text-slate-900">
+              {badges.length}
+            </div>
 
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  العمر
-                </p>
-
-                <p className="mt-1 font-semibold text-gray-900 dark:text-white">
-                  {profile.age ? `${profile.age} سنة` : "غير محدد"}
-                </p>
-              </div>
+            <div className="flex items-center justify-center gap-1 text-sm text-slate-500 mt-1">
+              <Award className="w-4 h-4" />
+              الشارات
             </div>
           </div>
         </div>
-      </section>
 
-      {/* =================================================
-          POSTS
-      ================================================= */}
+        {/* ================================================= */}
+        {/* Gamification */}
+        {/* ================================================= */}
 
-      <section className="mt-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {isOwnProfile
-                ? "منشوراتي"
-                : `منشورات ${profileName}`}
-            </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Gems */}
 
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {isOwnProfile
-                ? "آخر ما نشرته على UniShare"
-                : "آخر المنشورات التي شاركها على UniShare"}
-            </p>
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                <Gem className="w-5 h-5 text-amber-500" />
+              </div>
+
+              <div>
+                <h2 className="font-bold text-slate-900">
+                  جواهري
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  رصيد صاحب الحساب
+                </p>
+              </div>
+            </div>
+
+            <div className="text-4xl font-bold text-slate-900">
+              {gamification?.gems ??
+                0}
+            </div>
           </div>
 
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-            {postsCount}
-          </span>
+          {/* Badges */}
+
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                <Award className="w-5 h-5 text-purple-600" />
+              </div>
+
+              <div>
+                <h2 className="font-bold text-slate-900">
+                  الشارات
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  الإنجازات التي حصل عليها
+                  صاحب الحساب
+                </p>
+              </div>
+            </div>
+
+            {badges.length ===
+            0 ? (
+              <p className="text-sm text-slate-500">
+                لا توجد شارات بعد.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {badges.map(
+                  (badge) => (
+                    <div
+                      key={
+                        badge.id
+                      }
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200"
+                    >
+                      <Award className="w-4 h-4 text-purple-600" />
+
+                      <span className="text-sm font-medium text-slate-700">
+                        {
+                          badge.name
+                        }
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {posts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center dark:border-gray-700 dark:bg-gray-900">
-            <PenLine className="mx-auto h-10 w-10 text-gray-400" />
+        {/* ================================================= */}
+        {/* Posts */}
+        {/* ================================================= */}
 
-            <h3 className="mt-4 font-bold text-gray-900 dark:text-white">
-              {isOwnProfile
-                ? "لم تنشر أي منشور بعد"
-                : "لا توجد منشورات لهذا المستخدم بعد"}
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {isOwnProfile
-                ? "ابدأ بمشاركة المعرفة مع مجتمعك الجامعي."
-                : "ستظهر المنشورات هنا عند مشاركتها على UniShare."}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-5">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* =================================================
-          FOOTER CTA
-      ================================================= */}
-
-      {isOwnProfile && (
-        <section className="mt-8 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 p-6 text-white shadow-lg">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <section>
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-xl font-bold">
-                شارك معرفتك مع مجتمع UniShare
+              <h2 className="text-xl font-bold text-slate-900">
+                المنشورات
               </h2>
 
-              <p className="mt-1 text-sm text-white/80">
-                كل مساهمة منك يمكن أن تساعد طالبًا آخر وتكسبك Gems وبادجات.
+              <p className="text-sm text-slate-500 mt-1">
+                منشورات صاحب الحساب
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => navigate("/posts")}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-blue-600 transition hover:bg-gray-100"
-            >
-              <PenLine className="h-4 w-4" />
-              إنشاء منشور
-            </button>
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <MessageCircle className="w-4 h-4" />
+              {posts.length}
+            </div>
           </div>
+
+          {posts.length ===
+          0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
+              <MessageCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+
+              <h3 className="font-semibold text-slate-800">
+                لا توجد منشورات بعد
+              </h3>
+
+              <p className="text-sm text-slate-500 mt-1">
+                لم ينشر صاحب هذا الحساب
+                أي منشور بعد.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {posts.map(
+                (post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                  />
+                )
+              )}
+            </div>
+          )}
         </section>
-      )}
+      </main>
     </div>
   );
 }

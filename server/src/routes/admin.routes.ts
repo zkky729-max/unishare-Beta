@@ -9,6 +9,7 @@ import {
   // =====================================================
   // USERS
   // =====================================================
+
   getUsers,
   getUser,
   getStats,
@@ -16,8 +17,16 @@ import {
   deleteUser,
 
   // =====================================================
+  // POSTS
+  // =====================================================
+
+  getAdminPosts,
+  deletePost,
+
+  // =====================================================
   // UNIVERSITIES
   // =====================================================
+
   createUniversity,
   getUniversities,
   updateUniversity,
@@ -26,6 +35,7 @@ import {
   // =====================================================
   // FACULTIES
   // =====================================================
+
   createFaculty,
   getFaculties,
   deleteFaculty,
@@ -33,6 +43,7 @@ import {
   // =====================================================
   // DEPARTMENTS
   // =====================================================
+
   createDepartment,
   getDepartmentsByFaculty,
   updateDepartment,
@@ -41,6 +52,7 @@ import {
   // =====================================================
   // SPECIALTIES
   // =====================================================
+
   createSpecialty,
   getSpecialties,
   getSpecialtiesByFaculty,
@@ -49,18 +61,21 @@ import {
   // =====================================================
   // LEVELS
   // =====================================================
+
   createLevel,
   getLevelsBySpecialty,
 
   // =====================================================
   // SEMESTERS
   // =====================================================
+
   createSemester,
   getSemestersByLevel,
 
   // =====================================================
   // MODULES
   // =====================================================
+
   createModule,
   getModules,
   getModulesBySemester,
@@ -68,6 +83,7 @@ import {
   // =====================================================
   // SUBJECTS
   // =====================================================
+
   createSubject,
   getSubjects,
   getSubjectsByModule,
@@ -75,6 +91,7 @@ import {
   // =====================================================
   // LESSONS
   // =====================================================
+
   createLesson,
   getLessonsBySubject,
   updateLesson,
@@ -117,6 +134,26 @@ router.put(
 router.delete(
   "/users/:userId",
   deleteUser
+);
+
+// =====================================================
+// POSTS
+// =====================================================
+
+// GET all posts for admin
+// /api/admin/posts
+
+router.get(
+  "/posts",
+  getAdminPosts
+);
+
+// DELETE post
+// /api/admin/posts/:id
+
+router.delete(
+  "/posts/:id",
+  deletePost
 );
 
 // =====================================================
@@ -168,6 +205,7 @@ router.delete(
 
 // GET departments by faculty
 // /api/admin/departments/faculty/:faculty_id
+
 router.get(
   "/departments/faculty/:faculty_id",
   getDepartmentsByFaculty
@@ -175,6 +213,7 @@ router.get(
 
 // CREATE department
 // /api/admin/departments
+
 router.post(
   "/departments",
   createDepartment
@@ -182,6 +221,7 @@ router.post(
 
 // UPDATE department
 // /api/admin/departments/:id
+
 router.put(
   "/departments/:id",
   updateDepartment
@@ -189,6 +229,7 @@ router.put(
 
 // DELETE department
 // /api/admin/departments/:id
+
 router.delete(
   "/departments/:id",
   deleteDepartment
@@ -200,6 +241,7 @@ router.delete(
 
 // CREATE specialty
 // /api/admin/specialties
+
 router.post(
   "/specialties",
   createSpecialty
@@ -207,6 +249,7 @@ router.post(
 
 // GET all specialties
 // /api/admin/specialties
+
 router.get(
   "/specialties",
   getSpecialties
@@ -214,6 +257,7 @@ router.get(
 
 // GET specialties by faculty
 // /api/admin/specialties/faculty/:faculty_id
+
 router.get(
   "/specialties/faculty/:faculty_id",
   getSpecialtiesByFaculty
@@ -221,6 +265,7 @@ router.get(
 
 // DELETE specialty
 // /api/admin/specialties/:id
+
 router.delete(
   "/specialties/:id",
   deleteSpecialty

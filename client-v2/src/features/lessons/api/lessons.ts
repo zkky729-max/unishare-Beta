@@ -21,25 +21,36 @@ export async function getLessonsBySubject(
     throw new Error("Subject ID is required.");
   }
 
-  const { data, error } = await supabase
-    .from("lessons")
-    .select(`
-      id,
-      subject_id,
-      title,
-      description,
-      content,
-      created_at,
-      updated_at
-    `)
-    .eq("subject_id", subjectId)
-    .order("created_at", {
-      ascending: true,
-    });
+  /*
+   * =====================================================
+   * PUBLIC LESSON LIST
+   * =====================================================
+   *
+   * نستخدم RPC بدل القراءة المباشرة من جدول lessons
+   * لأن الزائر لا يملك صلاحية قراءة محتوى الدرس.
+   *
+   * الـ RPC يرجع فقط:
+   * - id
+   * - subject_id
+   * - title
+   * - description
+   * - created_at
+   * - updated_at
+   *
+   * ولا يرجع content.
+   */
+
+  const { data, error } =
+    await supabase.rpc(
+      "get_public_lessons_by_subject",
+      {
+        p_subject_id: subjectId,
+      }
+    );
 
   if (error) {
     console.error(
-      "GET LESSONS ERROR:",
+      "GET PUBLIC LESSONS ERROR:",
       error
     );
 
@@ -167,7 +178,8 @@ export async function updateLesson(
         description?.trim() || null,
       content:
         content?.trim() || null,
-      updated_at: new Date().toISOString(),
+      updated_at:
+        new Date().toISOString(),
     })
     .eq("id", lessonId)
     .select(`
