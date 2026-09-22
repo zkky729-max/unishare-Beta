@@ -7,11 +7,10 @@ import {
 
 import {
   AuthenticatedRequest,
-} from "./auth.middleware";
-
+} from "./auth.middleware.js";
 import {
   supabaseAdmin,
-} from "../lib/supabaseAdmin";
+} from "../lib/supabaseAdmin.js";
 
 export const requireAdmin: RequestHandler = async (
   req: Request,

@@ -14,8 +14,7 @@ import {
   requireAuth,
 } from "../middleware/auth.middleware.js";
 
-const router =
-  express.Router();
+const router = express.Router();
 
 // =====================================================
 // FRIENDS LIST

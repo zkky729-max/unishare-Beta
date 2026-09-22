@@ -5,7 +5,7 @@ import {
 
 import {
   AuthenticatedRequest,
-} from "../middleware/auth.middleware";
+} from "../middleware/auth.middleware.js";
 
 import {
   sendFriendRequest,
@@ -15,7 +15,7 @@ import {
   cancelFriendRequest,
   getFriends,
   searchUsers,
-} from "../services/friends.service";
+} from "../services/friends.service.js";
 
 // =====================================================
 // SEND FRIEND REQUEST
@@ -310,19 +310,6 @@ export const getFriendsController =
 // =====================================================
 // SEARCH USERS
 // =====================================================
-//
-// البحث العام عن المستخدمين داخل UniShare.
-//
-// Endpoint:
-// GET /api/friends/users/search?q=...
-//
-// البحث يتم بواسطة:
-// - username
-// - full_name
-//
-// المستخدم الحالي يتم استبعاده.
-// البريد الإلكتروني لا يتم إرجاعه.
-// =====================================================
 
 export const searchUsersController =
   async (
@@ -333,44 +320,24 @@ export const searchUsersController =
       const authenticatedReq =
         req as AuthenticatedRequest;
 
-      // -------------------------------------------------
-      // قراءة query
-      // -------------------------------------------------
-
-      const query =
-        typeof req.query.q ===
-        "string"
+      const q =
+        typeof req.query.q === "string"
           ? req.query.q.trim()
           : "";
 
-      // -------------------------------------------------
-      // التحقق من الحد الأدنى
-      // -------------------------------------------------
-
-      if (
-        query.length < 2
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "يجب أن يحتوي البحث على حرفين على الأقل",
+      if (!q) {
+        return res.status(200).json({
+          success: true,
+          data: [],
         });
       }
-
-      // -------------------------------------------------
-      // البحث
-      // -------------------------------------------------
 
       const users =
         await searchUsers(
           authenticatedReq.accessToken,
-          query,
-          authenticatedReq.user.id
+          authenticatedReq.user.id,
+          q
         );
-
-      // -------------------------------------------------
-      // Response
-      // -------------------------------------------------
 
       return res.status(200).json({
         success: true,

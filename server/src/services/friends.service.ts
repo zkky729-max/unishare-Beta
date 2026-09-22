@@ -1,6 +1,6 @@
 import {
   createSupabaseRequestClient,
-} from "../lib/supabaseRequest";
+} from "../lib/supabaseRequest.js";
 
 // =====================================================
 // TYPES
