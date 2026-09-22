@@ -1,4 +1,4 @@
-import { createSupabaseRequestClient } from "../lib/supabaseRequest";
+import { createSupabaseRequestClient } from "../lib/supabaseRequest.js";
 
 // =====================================================
 // GET USER CONVERSATIONS
