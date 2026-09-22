@@ -40,7 +40,7 @@ export async function getFriendRequests(): Promise<{
   }
 
   const response = await fetch(
-    "http://localhost:3001/api/friends/requests",
+    "https://unishare-api-ivory.vercel.app/api/friends/requests",
     {
       method: "GET",
       headers: {

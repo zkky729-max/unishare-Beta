@@ -27,7 +27,7 @@ export async function sendFriendRequest(
   }
 
   const response = await fetch(
-    "http://localhost:3001/api/friends/requests",
+    "https://unishare-api-ivory.vercel.app/api/friends/requests",
     {
       method: "POST",
       headers: {

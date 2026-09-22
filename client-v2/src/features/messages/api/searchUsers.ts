@@ -37,7 +37,7 @@ export async function searchUsers(
   params.set("q", normalizedQuery);
 
   const response = await fetch(
-    `http://localhost:3001/api/messages/users/search?${params.toString()}`,
+    `https://unishare-api-ivory.vercel.app/api/messages/users/search?${params.toString()}`,
     {
       method: "GET",
 

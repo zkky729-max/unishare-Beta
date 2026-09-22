@@ -3,7 +3,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import type { AdminUser } from "../types/admin";
 
 const API_BASE_URL =
-  "http://localhost:3001/api/admin";
+  "https://unishare-api-ivory.vercel.app/api/admin";
 
 async function getAccessToken(): Promise<string> {
   const {

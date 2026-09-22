@@ -38,7 +38,7 @@ export async function updateUserRole({
 
   const response =
     await fetch(
-      `http://localhost:3001/api/admin/users/${userId}/role`,
+      `https://unishare-api-ivory.vercel.app/api/admin/users/${userId}/role`,
       {
         method: "PATCH",
 

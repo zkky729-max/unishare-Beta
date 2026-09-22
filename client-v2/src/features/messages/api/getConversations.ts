@@ -20,7 +20,7 @@ export async function getConversations(): Promise<Conversation[]> {
   }
 
   const response = await fetch(
-    "http://localhost:3001/api/messages/conversations",
+    "https://unishare-api-ivory.vercel.app/api/messages/conversations",
     {
       method: "GET",
       headers: {

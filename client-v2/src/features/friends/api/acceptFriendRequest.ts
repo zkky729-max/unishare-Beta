@@ -27,7 +27,7 @@ export async function acceptFriendRequest(
   }
 
   const response = await fetch(
-    `http://localhost:3001/api/friends/requests/${friendshipId}/accept`,
+    `https://unishare-api-ivory.vercel.app/api/friends/requests/${friendshipId}/accept`,
     {
       method: "PATCH",
       headers: {

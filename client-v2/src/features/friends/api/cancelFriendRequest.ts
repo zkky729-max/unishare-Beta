@@ -27,7 +27,7 @@ export async function cancelFriendRequest(
   }
 
   const response = await fetch(
-    `http://localhost:3001/api/friends/requests/${friendshipId}`,
+    `https://unishare-api-ivory.vercel.app/api/friends/requests/${friendshipId}`,
     {
       method: "DELETE",
       headers: {
