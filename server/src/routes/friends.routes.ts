@@ -8,11 +8,11 @@ import {
   cancelRequest,
   getFriendsController,
   searchUsersController,
-} from "../controllers/friends.controller";
+} from "../controllers/friends.controller.js";
 
 import {
   requireAuth,
-} from "../middleware/auth.middleware";
+} from "../middleware/auth.middleware.js";
 
 const router =
   express.Router();
