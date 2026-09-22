@@ -7,7 +7,7 @@ import {
 
 import { createClient } from "@supabase/supabase-js";
 
-import { supabaseAdmin } from "../lib/supabaseAdmin";
+import { supabaseAdmin } from "../lib/supabaseAdmin.js";
 
 // =====================================================
 // ENVIRONMENT VARIABLES
