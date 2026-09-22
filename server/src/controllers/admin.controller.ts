@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 
-import { supabaseAdmin } from "../lib/supabaseAdmin";
-
+import { supabaseAdmin } from "../lib/supabaseAdmin.js";
 // =====================================================
 // HELPERS
 // =====================================================
