@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import {
   AuthenticatedRequest,
-} from "../middleware/auth.middleware";
+} from "../middleware/auth.middleware.js";
 
 import {
   getUserConversations,
@@ -10,7 +10,7 @@ import {
   searchUsers,
   getConversationMessages,
   sendMessage,
-} from "../services/messages.service";
+} from "../services/messages.service.js";
 
 // =====================================================
 // GET Conversations
