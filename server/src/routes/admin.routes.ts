@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   requireAdmin,
   requireAuth,
-} from "../middleware/auth.middleware";
+} from "../middleware/auth.middleware.js";
 
 import {
   // =====================================================
@@ -96,7 +96,7 @@ import {
   getLessonsBySubject,
   updateLesson,
   deleteLesson,
-} from "../controllers/admin.controller";
+} from "../controllers/admin.controller.js";
 
 const router = Router();
 
