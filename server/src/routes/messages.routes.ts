@@ -9,7 +9,7 @@ import {
 } from "../controllers/messages.controller.js";
 import {
   requireAuth,
-} from "../middleware/auth.middleware";
+} from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
