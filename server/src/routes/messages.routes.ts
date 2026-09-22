@@ -6,8 +6,7 @@ import {
   searchUsersController,
   getMessages,
   createMessage,
-} from "../controllers/messages.controller";
-
+} from "../controllers/messages.controller.js";
 import {
   requireAuth,
 } from "../middleware/auth.middleware";
