@@ -2,7 +2,10 @@ import {
   ArrowLeft,
   BookOpen,
   Building2,
+  Globe,
   GraduationCap,
+  Mail,
+  Phone,
   Users,
   University,
 } from "lucide-react";
@@ -19,15 +22,14 @@ export default function HomePage() {
       ===================================================== */}
 
       <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
-        <div className="relative mx-auto flex h-20 max-w-7xl items-center px-6 lg:px-8">
-
+        <div className="relative mx-auto flex h-16 max-w-7xl items-center px-3 sm:h-20 sm:px-6 lg:px-8">
           {/* أزرار الحساب */}
 
-          <div className="absolute left-6 z-20 flex items-center gap-3 lg:left-8">
+          <div className="absolute left-3 z-20 flex items-center gap-1.5 sm:left-6 sm:gap-3 lg:left-8">
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+              className="rounded-lg px-2.5 py-2 text-[11px] font-semibold text-gray-700 transition hover:bg-gray-100 sm:rounded-xl sm:px-5 sm:py-2.5 sm:text-sm"
             >
               تسجيل الدخول
             </button>
@@ -35,7 +37,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => navigate("/register")}
-              className="rounded-xl bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
+              className="rounded-lg bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-2.5 py-2 text-[11px] font-semibold text-white shadow-sm transition hover:shadow-md sm:rounded-xl sm:px-5 sm:py-2.5 sm:text-sm"
             >
               إنشاء حساب
             </button>
@@ -43,12 +45,12 @@ export default function HomePage() {
 
           {/* الشعار في المنتصف */}
 
-          <div className="mx-auto flex h-full items-center justify-center">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <button
               type="button"
               onClick={() => navigate("/")}
               aria-label="UniShare"
-              className="relative z-30 flex items-center justify-center rounded-xl p-1 transition hover:scale-[1.02]"
+              className="pointer-events-auto relative z-30 flex scale-[0.55] items-center justify-center rounded-xl p-1 transition hover:scale-[0.58] sm:scale-100 sm:hover:scale-[1.02]"
             >
               <UniShareLogo />
             </button>
@@ -60,8 +62,7 @@ export default function HomePage() {
           MAIN
       ===================================================== */}
 
-      <main className="pt-20">
-
+      <main className="pt-16 sm:pt-20">
         {/* ===================================================
             HERO
         =================================================== */}
@@ -71,10 +72,7 @@ export default function HomePage() {
 
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
             <div className="mx-auto max-w-4xl text-center">
-
-              {/* =================================================
-                  الشعار الرمزي
-              ================================================= */}
+              {/* الشعار الرمزي */}
 
               <div className="mb-7 flex justify-center">
                 <UniShareLogo
@@ -83,9 +81,7 @@ export default function HomePage() {
                 />
               </div>
 
-              {/* =================================================
-                  الشارة
-              ================================================= */}
+              {/* الشارة */}
 
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-5 py-2.5 text-sm font-semibold text-blue-600 shadow-sm">
                 <GraduationCap size={18} />
@@ -93,9 +89,7 @@ export default function HomePage() {
                 من المعرفة يبدأ الطريق
               </div>
 
-              {/* =================================================
-                  العنوان
-              ================================================= */}
+              {/* العنوان */}
 
               <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
                 ابنِ مستقبلك
@@ -105,9 +99,7 @@ export default function HomePage() {
                 </span>
               </h1>
 
-              {/* =================================================
-                  الوصف
-              ================================================= */}
+              {/* الوصف */}
 
               <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-gray-600">
                 الجامعة ليست مجرد سنوات دراسية، بل مرحلة تبني فيها
@@ -115,9 +107,7 @@ export default function HomePage() {
                 من معرفة الآخرين، وابنِ طريقك خطوة بعد خطوة.
               </p>
 
-              {/* =================================================
-                  الأزرار
-              ================================================= */}
+              {/* الأزرار */}
 
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <button
@@ -151,7 +141,6 @@ export default function HomePage() {
 
         <section className="border-y border-gray-100 bg-white">
           <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
                 طريقك الأكاديمي
@@ -168,7 +157,6 @@ export default function HomePage() {
             </div>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
               {/* الجامعات */}
 
               <button
@@ -180,9 +168,7 @@ export default function HomePage() {
                   <University size={24} />
                 </div>
 
-                <h3 className="font-bold">
-                  الجامعات
-                </h3>
+                <h3 className="font-bold">الجامعات</h3>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
                   ابدأ من المؤسسة الجامعية التي تنتمي إليها.
@@ -209,9 +195,7 @@ export default function HomePage() {
                   <Building2 size={24} />
                 </div>
 
-                <h3 className="font-bold">
-                  الكليات
-                </h3>
+                <h3 className="font-bold">الكليات</h3>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
                   تعرّف على الكليات والمسارات الموجودة فيها.
@@ -238,9 +222,7 @@ export default function HomePage() {
                   <Users size={24} />
                 </div>
 
-                <h3 className="font-bold">
-                  مجتمع المعرفة
-                </h3>
+                <h3 className="font-bold">مجتمع المعرفة</h3>
 
                 <p className="mt-2 text-sm leading-6 text-gray-500">
                   شارك المعرفة وساعد زملاءك في رحلتهم الدراسية.
@@ -265,7 +247,6 @@ export default function HomePage() {
 
         <section className="bg-[#f8fafc]">
           <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-semibold uppercase tracking-widest text-indigo-500">
                 فلسفة UniShare
@@ -283,7 +264,6 @@ export default function HomePage() {
             </div>
 
             <div className="mt-12 grid gap-6 md:grid-cols-3">
-
               {/* العلم */}
 
               <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
@@ -291,9 +271,7 @@ export default function HomePage() {
                   <BookOpen size={28} />
                 </div>
 
-                <h3 className="mt-6 text-xl font-bold">
-                  اطلب العلم
-                </h3>
+                <h3 className="mt-6 text-xl font-bold">اطلب العلم</h3>
 
                 <p className="mt-3 leading-7 text-gray-600">
                   اجعل التعلم رحلة مستمرة، وابحث عن الفهم والمعرفة
@@ -308,9 +286,7 @@ export default function HomePage() {
                   <GraduationCap size={28} />
                 </div>
 
-                <h3 className="mt-6 text-xl font-bold">
-                  ابنِ مستقبلك
-                </h3>
+                <h3 className="mt-6 text-xl font-bold">ابنِ مستقبلك</h3>
 
                 <p className="mt-3 leading-7 text-gray-600">
                   كل درس وكل مهارة وكل تجربة هي لبنة جديدة في
@@ -325,9 +301,7 @@ export default function HomePage() {
                   <Users size={28} />
                 </div>
 
-                <h3 className="mt-6 text-xl font-bold">
-                  تعلّم بتواضع
-                </h3>
+                <h3 className="mt-6 text-xl font-bold">تعلّم بتواضع</h3>
 
                 <p className="mt-3 leading-7 text-gray-600">
                   مهما تعلمنا، يبقى هناك ما يمكن أن نتعلمه من
@@ -344,9 +318,7 @@ export default function HomePage() {
 
         <section className="bg-white">
           <div className="mx-auto max-w-6xl px-6 py-20 lg:px-8">
-
             <div className="rounded-[2rem] border border-gray-100 bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-8 sm:p-12">
-
               <div className="mx-auto max-w-3xl text-center">
                 <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
                   رحلتك الدراسية
@@ -363,7 +335,6 @@ export default function HomePage() {
               </div>
 
               <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold">
-
                 <span className="rounded-full bg-white px-5 py-3 shadow-sm">
                   الجامعة
                 </span>
@@ -420,7 +391,6 @@ export default function HomePage() {
 
         <section className="px-6 py-20">
           <div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 px-8 py-16 text-center text-white shadow-xl lg:px-16">
-
             <h2 className="text-3xl font-extrabold sm:text-4xl">
               ابنِ مستقبلك بالعلم والنور
             </h2>
@@ -446,20 +416,60 @@ export default function HomePage() {
       ===================================================== */}
 
       <footer className="border-t border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-sm text-gray-500 sm:flex-row lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+          <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
+            {/* الشعار */}
 
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            aria-label="UniShare"
-            className="flex items-center justify-center"
-          >
-            <UniShareLogo />
-          </button>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              aria-label="UniShare"
+              className="flex items-center justify-center"
+            >
+              <UniShareLogo />
+            </button>
 
-          <p>
+            {/* معلومات التواصل */}
+
+            <div className="flex flex-col items-center gap-4 text-sm text-gray-500 sm:items-end">
+              <p className="font-semibold text-gray-700">
+                تواصل معنا
+              </p>
+
+              <div className="flex flex-col items-center gap-3 sm:items-end">
+                <a
+                  href="mailto:support.unishare@gmail.com"
+                  className="flex items-center gap-2 transition hover:text-blue-600"
+                >
+                  <Mail size={17} />
+                  <span>support.unishare@gmail.com</span>
+                </a>
+
+                <a
+                  href="tel:+213553469772"
+                  className="flex items-center gap-2 transition hover:text-blue-600"
+                  dir="ltr"
+                >
+                  <Phone size={17} />
+                  <span>+213 553 469 772</span>
+                </a>
+
+                <a
+                  href="https://www.facebook.com/share/1AiFhbNdag/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 transition hover:text-blue-600"
+                >
+                  <Globe size={17} />
+                  <span>Facebook</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center text-sm text-gray-500">
             © {new Date().getFullYear()} UniShare. جميع الحقوق محفوظة.
-          </p>
+          </div>
         </div>
       </footer>
     </div>
